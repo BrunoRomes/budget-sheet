@@ -3,12 +3,18 @@ function sanitizeCsvs() {}
 function refreshCashflow() {}
 
 function init() {
+  const modalHelper = new ModalHelper();
   // Init the spreadsheet: bootstraps and applies migrations.
   // This is slow, it will take a while.
+  modalHelper.showWait('Bootstrapping...');
   new Bootstrap().run();
+  modalHelper.showWait('Applying migrations...');
   new MigrationManager().run();
-  sanitizeCsvs();
+  modalHelper.showWait('Sanitizing CSVs...');
+  sanitizeCsvs(); // TODO: THis can probably be its own trigger, as it does not depend on the spreadsheet schema at all. Loading transactions from the csv into the spreadsheet is another story, though.
+  modalHelper.showWait('Refreshing Cashflow...');
   refreshCashflow();
+  modalHelper.close();
 }
 
 function reset() {
