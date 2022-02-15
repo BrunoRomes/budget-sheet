@@ -1,0 +1,50 @@
+{
+  "root": true,
+  "parser": "@babel/eslint-parser",
+  "plugins": ["prettier", "googleappsscript"],
+  "extends": [
+    "airbnb-base",
+    "eslint:recommended",
+    "plugin:prettier/recommended",
+    "plugin:import/errors",
+    "plugin:import/warnings"
+  ],
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "ecmaVersion": 12,
+    "sourceType": "module"
+  },
+  "env": {
+    "browser": true,
+    "es6": true,
+    "node": true,
+    "googleappsscript/googleappsscript": true
+  },
+  "ignorePatterns": ["node_modules/"],
+  "rules": {
+    "class-methods-use-this": "off",
+    "prettier/prettier": [
+      "error",
+      {
+        "trailingComma": "es5",
+        "singleQuote": true,
+        "printWidth": 120,
+        "endOfLine": "auto"
+      }
+    ],
+    "no-await-in-loop": "error",
+    "import/prefer-default-export": "off",
+    "no-undef": "off",
+    "no-unused-vars": [
+      1,
+      {
+        "ignoreRestSiblings": true,
+        "argsIgnorePattern": "res|next|^err|^ignore|^_",
+        "caughtErrors": "none",
+        "vars": "local"
+      }
+    ]
+  }
+}
