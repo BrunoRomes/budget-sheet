@@ -43,7 +43,8 @@
         "ignoreRestSiblings": true,
         "argsIgnorePattern": "res|next|^err|^ignore|^_",
         "caughtErrors": "none",
-        "vars": "local"
+        "vars": "local",
+        "varsIgnorePattern": "^[A-Z]|^test"
       }
     ]
   }
