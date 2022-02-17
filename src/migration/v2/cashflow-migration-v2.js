@@ -33,9 +33,3 @@ class CashflowMigrationV2 extends BaseSheetMigration {
     ]);
   }
 }
-
-// function testCashflowMigrationV2() {
-//   const m = new CashflowMigrationV2();
-//   m.run();
-//   Logger.log('ABC');
-// }

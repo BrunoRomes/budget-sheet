@@ -1,6 +1,8 @@
 function sanitizeCsvs() {}
 
-function refreshCashflow() {}
+function refreshCashflow() {
+  new CashflowManager().updateCashflow();
+}
 
 function init() {
   const modalHelper = new ModalHelper();

@@ -16,8 +16,15 @@ This project aims at generating and maintaining a Google Spreadsheet for budget 
     ./init.sh -n "<NAME OF THE SPREADSHEET>"
     ```
     This script will create 2 spreadsheets in the root of your google drive account: one will have the name you specified, the other will be called `Template_Budget`. `Template_Budget` is meant to be used to develop and test new features before deploying them to the real spreadsheet.
+1. Make a copy of `userconfig.json.template` and customize it:
+    ```
+    cp userconfig.json.template userconfig.json
+    ```
+    
 
 ### Deploying
 There are 2 commands to deploy changes to your spreadsheet:
 1. `npm run deploy-template` : deploys the project to the `Template_Budget` spreadsheet
 1. `npm run deploy` : deploys the project to the "real" spreadsheet
+
+After the first deployment, open the spreadsheet, then `Finances` > `Setup Triggers` and refresh the page.
