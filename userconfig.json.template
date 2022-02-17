@@ -1,0 +1,43 @@
+{
+    "year": "2022",
+    "sheet_folder_path": ["Budget"],
+    "csvs_folder_path": ["Budget", "csvs"],
+    "cashflow_sources": {
+        "bchydro": [{}],
+        "burnabyUtilities": [{}],
+        "monthlyExpenses": [
+            {
+                "value": -10,
+                "event": "FakeEvent1",
+                "startDate": "2022-01-01"
+            }
+        ],
+        "biweeklyExpenses": [
+            {
+                "value": -30,
+                "event": "FakeEvent2",
+                "startDate": "2022-01-13"
+            }
+        ],
+        "capitaloneCard": [
+            {
+                "account": "<FAKE_LAST_4_DIGITS>",
+                "event": "Fake Capital One"
+            }
+        ],
+        "rogersCard": [{}],
+        "scotiabankCard": [{}],
+        "scotiabankChequing": [
+            {
+                "account": "<FAKE_ACCOUNT_NUMBER_WITH_*s>",
+                "event": "Fake Scotiabank Acc"
+            }
+        ],
+        "tangerineChequing": [
+            {
+                "account": "<FAKE_LAST_4_DIGITS>",
+                "event": "Fake Tangerine Acc"
+            }
+        ]
+    }
+}

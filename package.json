@@ -8,7 +8,7 @@
     "lint": "./node_modules/.bin/eslint src",
     "lint_fix": "./node_modules/.bin/eslint --fix src",
     "format": "prettier --write src/",
-    "copydist": "rm -rf ./dist && mkdir ./dist && cp appsscript.json dist/appsscript.json && cp -r src/* dist/",
+    "copydist": "rm -rf ./dist && mkdir ./dist && cp appsscript.json dist/appsscript.json && cp userconfig.json dist/userconfig.json.html && cp -r src/* dist/",
     "build": "npm run lint_fix && npm run copydist",
     "upload": "npx clasp push -f",
     "deploy": "rm -rf .clasp.json && cp .clasp.json_prod .clasp.json && npm run build && npm run upload",

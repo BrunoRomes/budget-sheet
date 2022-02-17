@@ -2,4 +2,7 @@
 !appsscript.json
 !*.js
 !**/**.js
+!*.json
+!**/**.json
 !*.html
+!**/**.html

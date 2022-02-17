@@ -4,6 +4,9 @@ function refreshCashflow() {}
 
 function init() {
   const modalHelper = new ModalHelper();
+  modalHelper.showWait('Loading config...');
+  UserConfig.loadConfig();
+
   // Init the spreadsheet: bootstraps and applies migrations.
   // This is slow, it will take a while.
   modalHelper.showWait('Bootstrapping...');
