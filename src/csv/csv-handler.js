@@ -46,7 +46,7 @@ class CsvHandler {
       const file = filesIt.next();
       const transactions = this.private_parseCsvs([file]);
       this.private_updateTransactions(transactions, MONTHS[monthIndex]);
-    file.setTrashed(true);
+      file.setTrashed(true);
     }
   }
 

@@ -11,7 +11,7 @@ class TangerineCsvParser extends BaseCsvParser {
       const date = current[0].split('/');
       const description = current[2];
       const value = parseFloat(current[4]);
-      const t = new CsvTransaction(date[2], date[0], date[1], description, value, 'Tangerine');
+      const t = new CsvTransaction(date[2], date[0], date[1], description, value, 'Tangerine', '');
       let { key } = t;
       let count = 1;
       while (key in transactions) {
