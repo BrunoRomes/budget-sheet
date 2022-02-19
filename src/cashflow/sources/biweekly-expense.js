@@ -8,7 +8,7 @@ class BiweeklyExpenseCashflowSource extends BaseCashflowSource {
 
   fetch() {
     const entries = [];
-    let date = this.startDate;
+    let date = new Date(this.startDate);
     const endDate = new Date();
     endDate.setMonth(endDate.getMonth() + 3);
     for (let i = 0; i < 26 && date < endDate; i += 1) {
