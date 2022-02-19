@@ -37,6 +37,9 @@ class CashflowSheetBootstrapper extends BaseSheetBootstrapper {
       ['Min $ in account', 5000.0],
       ['Today', '=TODAY()'],
     ]);
+
+    const image = this.sheet.insertImage(REFRESH_BUTTON_IMAGE, 7, 41);
+    image.assignScript('refresh');
   }
 
   applyFormat() {

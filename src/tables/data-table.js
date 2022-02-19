@@ -75,9 +75,17 @@ class DataTable {
     return this.sheet.getRange(this.startRow, this.startCol, 1, 1);
   }
 
+  getHeadersAndDataRange() {
+    if (this.includeHeaders) {
+      const offset = 2;
+      return this.sheet.getRange(this.startRow + offset, this.startCol, this.numRows + 1, this.headers.length);
+    }
+    return null;
+  }
+
   getHeadersRange() {
     if (this.includeHeaders) {
-      const offset = this.includeHeaders ? 2 : 0;
+      const offset = 2;
       return this.sheet.getRange(this.startRow + offset, this.startCol, 1, this.headers.length);
     }
     return null;
@@ -88,9 +96,19 @@ class DataTable {
     return this.sheet.getRange(this.startRow + offset + 1, this.startCol, this.numRows, this.headers.length);
   }
 
+  getDataRangeColumn(columnOffset) {
+    const offset = this.includeHeaders ? 2 : 0;
+    return this.sheet.getRange(this.startRow + offset + 1, this.startCol + columnOffset, this.numRows, 1);
+  }
+
   getTopDataRange(numRows) {
     const offset = this.includeHeaders ? 2 : 0;
     return this.sheet.getRange(this.startRow + offset + 1, this.startCol, numRows, this.headers.length);
+  }
+
+  getTopDataRangeColumn(numRows, columnOffset) {
+    const offset = this.includeHeaders ? 2 : 0;
+    return this.sheet.getRange(this.startRow + offset + 1, this.startCol + columnOffset, numRows, 1);
   }
 
   getCheckboxesRanges() {
@@ -155,5 +173,21 @@ class DataTable {
     }
 
     this.getTopDataRange(formattedData.length).setValues(formattedData);
+  }
+
+  setDataColumn(data, columnOffset) {
+    this.getDataRangeColumn(columnOffset).clearContent();
+    if (data.length === 0) {
+      return;
+    }
+
+    const formattedData = [];
+    for (let i = 0; i < data.length; i += 1) {
+      const entry = data[i];
+      const formattedEntry = [entry[this.headersKeys[columnOffset]]];
+      formattedData.push(formattedEntry);
+    }
+
+    this.getTopDataRangeColumn(formattedData.length, columnOffset).setValues(formattedData);
   }
 }

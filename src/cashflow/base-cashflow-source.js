@@ -8,7 +8,7 @@ class BaseCashflowSource {
     const entries = [];
     for (let t = 0; t < threads.length; t += 1) {
       const messages = threads[t].getMessages();
-      for (let i = 0; i < messages.length; i += 1) {
+      for (let i = messages.length - 1; i >= 0; i -= 1) {
         const entry = this.processGmailThread(messages[i].getPlainBody());
         if (entry !== null) {
           entries.push(entry);

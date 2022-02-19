@@ -9,7 +9,6 @@ class MigrationManager {
         new OverviewMigrationV2(),
         new CashflowMigrationV2(),
       ],
-      3: [new CashflowMigrationV3()],
     };
   }
 

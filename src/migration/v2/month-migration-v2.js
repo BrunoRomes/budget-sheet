@@ -108,7 +108,11 @@ class MonthMigrationV2 extends BaseSheetMigration {
     sheet
       .protect()
       .setWarningOnly(true)
-      .setUnprotectedRanges([this.newIncomeTable.getDataRange(), this.newExpensesTable.getDataRange()]);
+      .setUnprotectedRanges([this.newIncomeTable.getDataRange(), this.newExpensesTable.getHeadersAndDataRange()]);
+
+    if (this.newExpensesTable.getHeadersAndDataRange().getFilter() === null) {
+      this.newExpensesTable.getHeadersAndDataRange().createFilter();
+    }
   }
 
   writeDataPostMigration() {

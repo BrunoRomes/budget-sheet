@@ -59,6 +59,9 @@ class MonthSheetBootstrapper extends BaseSheetBootstrapper {
       .setTitle('Value VS Category')
       .build();
     this.sheet.insertChart(chart);
+
+    const image = this.sheet.insertImage(REFRESH_BUTTON_IMAGE, 2, 7);
+    image.assignScript('refresh');
   }
 
   applyFormat() {

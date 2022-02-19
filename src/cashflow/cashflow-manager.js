@@ -47,9 +47,9 @@ class CashflowManager {
   }
 }
 
-function testCashflowManager() {
-  UserConfig.loadConfig();
-  const a = new CashflowManager();
-  const b = a.deserializeSources();
-  Logger.log('abc');
-}
+// function testCashflowManager() {
+//   UserConfig.loadConfig();
+//   const a = new CashflowManager();
+//   const b = a.deserializeSources();
+//   Logger.log('abc');
+// }

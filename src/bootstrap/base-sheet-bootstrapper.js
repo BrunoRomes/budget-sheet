@@ -1,6 +1,7 @@
 class BaseSheetBootstrapper {
   constructor(sheetName) {
     const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
+    this.sheetName = sheetName;
 
     if (sheet !== null) {
       Logger.log(`${sheetName} sheet already exists. Skipping it.`);
@@ -19,6 +20,7 @@ class BaseSheetBootstrapper {
     }
     this.createSheet();
     this.applyFormat();
+    new MetadataSheet().updateMetadata(this.sheetName, 1);
   }
 
   createSheet() {

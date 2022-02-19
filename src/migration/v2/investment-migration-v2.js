@@ -13,7 +13,7 @@ class InvestmentMigrationV2 extends BaseSheetMigration {
       'Investment',
       ['Date', 'Amount', 'Description', 'Category', 'Source'],
       numRows
-    ).withDataValidationRules([new ColumnValidationRule(5, this.categoryValidationRule)]);
+    );
 
     this.newInvestmentsTable = new DataTable(
       sheet,
@@ -22,7 +22,7 @@ class InvestmentMigrationV2 extends BaseSheetMigration {
       'Investment',
       ['Date', 'Amount', 'Description', 'Category', 'Source', 'Key'],
       numRows
-    ).withDataValidationRules([new ColumnValidationRule(5, this.categoryValidationRule)]);
+    );
   }
 
   loadData() {

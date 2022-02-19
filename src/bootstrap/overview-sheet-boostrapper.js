@@ -92,6 +92,9 @@ class OverviewSheetBootstrapper extends BaseSheetBootstrapper {
         .setTitle('Total VS Category')
         .build()
     );
+
+    const image = this.sheet.insertImage(REFRESH_BUTTON_IMAGE, 15, 2);
+    image.assignScript('refresh');
   }
 
   applyFormat() {
@@ -119,5 +122,7 @@ class OverviewSheetBootstrapper extends BaseSheetBootstrapper {
       breakdownFormat.push('$###,###,##0.00');
     }
     Formatter.applyDataFormat(this.breakdownTable, breakdownFormat);
+
+    this.sheet.setColumnWidth(2, 200);
   }
 }

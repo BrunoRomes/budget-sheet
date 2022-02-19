@@ -1,9 +1,12 @@
-const VERSION = 3;
+const VERSION = 2;
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-const SHEET_FOLDER_PATH = [];
-const CSVS_FOLDER_PATH = [];
+let SHEET_FOLDER_PATH = [];
+let CSVS_FOLDER_PATH = [];
 let CASHFLOW_SOURCES_JSON = [];
 let YEAR = 2021;
+
+REFRESH_BUTTON_IMAGE =
+  'https://docs.google.com/drawings/d/e/2PACX-1vSw_LSUvA5qfxCWjnyskpr1RQzzspMIwjProt3hHHiW9F6Tr5KHPIxFOed2CjQk60LGmO6H8sEZ4fNT/pub?w=279&h=100';
 
 class UserConfig {
   static loadConfig() {
@@ -11,12 +14,8 @@ class UserConfig {
     const jsonObject = JSON.parse(jsonString);
 
     YEAR = jsonObject.year;
-    for (let i = 0; i < jsonObject.sheet_folder_path.length; i += 1) {
-      SHEET_FOLDER_PATH.push(jsonObject.sheet_folder_path[i]);
-    }
-    for (let i = 0; i < jsonObject.csvs_folder_path.length; i += 1) {
-      CSVS_FOLDER_PATH.push(jsonObject.csvs_folder_path[i]);
-    }
+    SHEET_FOLDER_PATH = jsonObject.sheet_folder_path;
+    CSVS_FOLDER_PATH = jsonObject.csvs_folder_path;
     CASHFLOW_SOURCES_JSON = jsonObject.cashflow_sources;
   }
 }

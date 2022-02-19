@@ -23,6 +23,7 @@ class Formatter {
     dataRange.setFontFamily('Lato');
     dataRange.setHorizontalAlignment('center');
     dataRange.applyRowBanding(SpreadsheetApp.BandingTheme.LIGHT_GREY, false, false);
+    dataRange.setWrap(true);
 
     const checkboxRanges = dataTable.getCheckboxesRanges();
     for (let i = 0; i < checkboxRanges.length; i += 1) {
