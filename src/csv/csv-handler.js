@@ -6,9 +6,11 @@ class CsvHandler {
       new SanitizedCsvParser(),
       new CapitalOneCsvParser(),
       new TangerineCsvParser(),
+      new AmazonCsvParser(),
+      new RogersbankCardCsvParser(),
+      new BrimCardCsvParser(),
       new ScotiabankCardCsvParser(),
       new ScotiabankCheckingsCsvParser(),
-      new AmazonCsvParser(),
     ];
   }
 
