@@ -10,7 +10,7 @@ class RogersCardCashflowSource extends BaseCashflowSource {
 
   processGmailThread(messageBody) {
     const reBalance = /A minimum payment of \$(.+) for/g;
-    const reDate = /is due on ([0-9]{4}-[0-9]{2}-[0-9]{2})/g;a
+    const reDate = /is due on ([0-9]{4}-[0-9]{2}-[0-9]{2})/g;
 
     const balance = reBalance.exec(messageBody)[1].replaceAll(',', '');
     const dueDate = reDate.exec(messageBody)[1];
