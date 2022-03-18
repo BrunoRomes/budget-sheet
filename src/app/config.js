@@ -1,4 +1,4 @@
-const VERSION = 2;
+const VERSION = 3;
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 let SHEET_FOLDER_PATH = [];
 let CSVS_FOLDER_PATH = [];
