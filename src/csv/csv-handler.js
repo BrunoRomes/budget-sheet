@@ -110,7 +110,7 @@ class CsvHandler {
     for (let i = 0; i < files.length; i += 1) {
       const content = Utilities.parseCsv(files[i].getBlob().getDataAsString());
       if (content.length >= 1) {
-        const fileTransaction = this.private_parseFileContent(content, this.parsers);
+        const fileTransaction = this.private_parseFileContent(files[i], content, this.parsers);
         transactions = { ...transactions, ...fileTransaction }; // Merging dictionaries
       }
     }
@@ -119,10 +119,11 @@ class CsvHandler {
     return transactions;
   }
 
-  private_parseFileContent(content, parsers) {
+  private_parseFileContent(file, content, parsers) {
     for (let i = 0; i < parsers.length; i += 1) {
       const parser = parsers[i];
       if (parser.canParse(content)) {
+        Logger.log(`Using ${parser.constructor.name} to parse the CSV file ${file}`);
         return parser.parse(content);
       }
     }
@@ -147,7 +148,16 @@ class CsvHandler {
     const rows = ['Key,Source,Year,Month,Day,Description,Value,YearMonth'];
     for (let i = 0; i < transactions.length; i += 1) {
       const t = transactions[i];
-      const row = [t.key, t.source, t.year, t.month, t.day, t.description, t.value, t.yearMonth].join(',');
+      const row = [
+        t.key,
+        t.source,
+        t.year,
+        t.month,
+        t.day,
+        t.description.replaceAll(',', ';'),
+        t.value,
+        t.yearMonth,
+      ].join(',');
       rows.push(row);
     }
 
