@@ -37,9 +37,3 @@ class CashflowMigrationV3 extends BaseSheetMigration {
     this.projectionTable.initialize(projectionData);
   }
 }
-
-// function testCashflowMigrationV3() {
-//   const m = new CashflowMigrationV3();
-//   m.run();
-//   Logger.log('ABC');
-// }

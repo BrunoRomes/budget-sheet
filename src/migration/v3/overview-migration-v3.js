@@ -79,9 +79,3 @@ class OverviewMigrationV3 extends BaseSheetMigration {
     this.summaryTable.initialize(summaryData);
   }
 }
-
-// function testOverviewMigrationV3() {
-//   const m = new OverviewMigrationV3();
-//   m.run();
-//   Logger.log('ABC');
-// }
