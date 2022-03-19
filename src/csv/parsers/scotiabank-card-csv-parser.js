@@ -1,6 +1,16 @@
 class ScotiabankCardCsvParser extends BaseCsvParser {
   canParse(content) {
-    return content[0].length === 3;
+    if (content[0].length !== 3) {
+      return false;
+    }
+
+    const dateFormat = /\d{1,2}\/\d{1,2}\/\d{4}/;
+    const date = dateFormat.exec(content[0][0]);
+
+    const valueFormat = /(-)?\d+\.\d{2}/;
+    const value = valueFormat.exec(content[0][2]);
+
+    return date != null && value != null;
   }
 
   parse(content) {

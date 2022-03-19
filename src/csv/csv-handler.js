@@ -11,6 +11,7 @@ class CsvHandler {
       new BrimCardCsvParser(),
       new ScotiabankCardCsvParser(),
       new ScotiabankCheckingsCsvParser(),
+      new CibcCardCsvParser(),
     ];
   }
 
