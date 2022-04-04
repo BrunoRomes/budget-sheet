@@ -17,7 +17,7 @@ class AmazonCsvParser extends BaseCsvParser {
       const description = `AmazonItems: ${
         items.length > descriptionThreshold ? `${items.substring(0, descriptionThreshold)}…` : items
       }`;
-      const value = parseFloat(current[4].substring(4).trim());
+      const value = parseFloat(current[4].substring(4).replace(',', '').trim());
       const t = new CsvTransaction(date[0], date[1], date[2], description, -value, 'Amazon', '');
       t.description = `ORDER:${orderid} - ${t.description}`;
       let { key } = t;
@@ -29,7 +29,9 @@ class AmazonCsvParser extends BaseCsvParser {
       t.key = key;
       transactions[t.key] = t;
 
-      const refund = parseFloat(current[11].length > 4 ? current[11].substring(4).trim() : current[11]);
+      const refund = parseFloat(
+        current[11].length > 4 ? current[11].substring(4).replace(',', '').trim() : current[11]
+      );
       if (refund !== 0) {
         const t2 = new CsvTransaction(date[0], date[1], date[2], description, refund, 'Amazon', '');
         t2.description = `ORDER:${orderid} - ${t2.description}`;
