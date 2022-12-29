@@ -5,6 +5,7 @@
   "author": "Bruno Lima",
   "license": "MIT",
   "scripts": {
+    "init": "cd scripts; ./init.sh -n ",
     "lint": "./node_modules/.bin/eslint src",
     "lint_fix": "./node_modules/.bin/eslint --fix src",
     "format": "prettier --write src/",

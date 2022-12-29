@@ -12,12 +12,7 @@ This project aims at generating and maintaining a Google Spreadsheet for budget 
 1. Install the npm dependencies: `npm install`
 1. Access https://script.google.com/home > Settings > Turn on Google Apps Script API
 1. Login to Google clasp. This will authorize the script to interact with your account: `npx clasp login`
-1. Init the project by running:
-
-   ```
-   cd scripts
-   ./init.sh -n "<NAME OF THE SPREADSHEET>"
-   ```
+1. Init the project by running: `npm run init "<NAME OF THE SPREADSHEET>"`
 
    This script will create 2 spreadsheets in the root of your google drive account: one will have the name you specified, the other will be called `Template_Budget`. `Template_Budget` is meant to be used to develop and test new features before deploying them to the real spreadsheet.
 
