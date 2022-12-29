@@ -14,11 +14,13 @@ This project aims at generating and maintaining a Google Spreadsheet for budget 
 1. Login to Google clasp. This will authorize the script to interact with your account: `npx clasp login`
 1. Init the project by running: `npm run init "<NAME OF THE SPREADSHEET>"`
 
-   This script will create 2 spreadsheets in the root of your google drive account: one will have the name you specified, the other will be called `Template_Budget`. `Template_Budget` is meant to be used to develop and test new features before deploying them to the real spreadsheet.
+   This script will create 2 empty spreadsheets in the root of your google drive account: one will have the name you specified, the other will be called `Template_Budget`. `Template_Budget` is meant to be used to develop and test new features before deploying them to the real spreadsheet.
 
    It will also create a `userconfig.json` file on the project's root folder.
 
 1. Customize the created `userconfig.json`
+1. Run `npm run deploy` to upload the scripts
+1. Go to your sheet and click `Finance > Setup Triggers` to bootstrap the sheets. It will ask you for authorization and guide you through it and you might have to click `Finance > Setup Triggers` again after this initial authorization.
 
 ### Deploying
 
