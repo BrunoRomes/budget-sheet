@@ -5,15 +5,16 @@
   "author": "Bruno Lima",
   "license": "MIT",
   "scripts": {
+    "init": "cd scripts; ./init.sh -n ",
     "lint": "./node_modules/.bin/eslint src",
-    "lint_fix": "./node_modules/.bin/eslint --fix src",
+    "lint_fix": "npm run lint -- --fix",
     "format": "prettier --write src/",
     "copydist": "rm -rf ./dist && mkdir ./dist && cp appsscript.json dist/appsscript.json && cp userconfig.json dist/userconfig.json.html && cp -r src/* dist/",
     "build": "npm run lint_fix && npm run copydist",
     "upload": "npx clasp push -f",
     "deploy": "rm -rf .clasp.json && cp .clasp.json_prod .clasp.json && npm run build && npm run upload",
     "deploy-template": "npm run build && npm run upload-template",
-    "upload-template": "rm -rf .clasp.json && cp .clasp.json_test .clasp.json &&  npx clasp push -f"
+    "upload-template": "rm -rf .clasp.json && cp .clasp.json_test .clasp.json && npm run upload"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.17.0",
