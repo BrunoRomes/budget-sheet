@@ -23,7 +23,7 @@ This project aims at generating and maintaining a Google Spreadsheet for budget 
 
    It will also create a `userconfig.json` file on the project's root folder.
 
-1. Customize the creatd `userconfig.json`
+1. Customize the created `userconfig.json`
 
 ### Deploying
 
@@ -33,4 +33,3 @@ There are 2 commands to deploy changes to your spreadsheet:
 1. `npm run deploy` : deploys the project to the "real" spreadsheet
 
 After the first deployment, open the spreadsheet, then `Finances` > `Setup Triggers` and refresh the page.
-
