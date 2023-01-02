@@ -37,4 +37,8 @@ class CibcCardCsvParser extends BaseCsvParser {
     }
     return transactions;
   }
+
+  getDelim(){
+    return ','
+  }
 }

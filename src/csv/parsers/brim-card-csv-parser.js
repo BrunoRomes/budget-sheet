@@ -25,4 +25,8 @@ class BrimCardCsvParser extends BaseCsvParser {
     }
     return transactions;
   }
+
+  getDelim(){
+    return ','
+  }
 }

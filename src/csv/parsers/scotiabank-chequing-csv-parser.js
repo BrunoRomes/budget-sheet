@@ -33,4 +33,8 @@ class ScotiabankCheckingsCsvParser extends BaseCsvParser {
     }
     return transactions;
   }
+
+  getDelim(){
+    return ','
+  }
 }

@@ -47,4 +47,8 @@ class AmazonCsvParser extends BaseCsvParser {
     }
     return transactions;
   }
+
+  getDelim(){
+    return ','
+  }
 }
