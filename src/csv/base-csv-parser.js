@@ -6,4 +6,8 @@ class BaseCsvParser {
   parse(_content) {
     return {};
   }
+
+  getDelim(){
+    return ','
+  }
 }

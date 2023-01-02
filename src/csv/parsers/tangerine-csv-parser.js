@@ -23,4 +23,8 @@ class TangerineCsvParser extends BaseCsvParser {
     }
     return transactions;
   }
+
+  getDelim(){
+    return ','
+  }
 }

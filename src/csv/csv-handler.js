@@ -4,10 +4,10 @@ class CsvHandler {
     this.sanitized_csv_suffix = ' Sanitized Transactions.csv';
     this.parsers = [
       new SanitizedCsvParser(),
-      new CapitalOneCsvParser(),
       new TangerineCsvParser(),
       new AmazonCsvParser(),
       new RogersbankCardCsvParser(),
+      new XpCardCsvParser(),
       new BrimCardCsvParser(),
       new ScotiabankCardCsvParser(),
       new ScotiabankCheckingsCsvParser(),
@@ -108,28 +108,23 @@ class CsvHandler {
 
   private_parseCsvs(files) {
     let transactions = {};
-    for (let i = 0; i < files.length; i += 1) {
-      const content = Utilities.parseCsv(files[i].getBlob().getDataAsString());
-      if (content.length >= 1) {
-        const fileTransaction = this.private_parseFileContent(files[i], content, this.parsers);
-        transactions = { ...transactions, ...fileTransaction }; // Merging dictionaries
+    for (let fileIndex = 0; fileIndex < files.length; fileIndex += 1) {
+      const file = files[fileIndex];
+      for (let parserIndex = 0; parserIndex < this.parsers.length; parserIndex += 1) {
+        const parser = this.parsers[parserIndex];
+        const delim = parser.getDelim()
+        const content = Utilities.parseCsv(file.getBlob().getDataAsString(), delim);
+        if (content.length >= 1) {
+          if (parser.canParse(content)) {
+            Logger.log(`Using ${parser.constructor.name} to parse the CSV file ${file}`);
+            const fileTransaction = parser.parse(content);
+            transactions = { ...transactions, ...fileTransaction }; // Merging dictionaries
+          }
+        }
       }
     }
-
     Logger.log(`Total of ${Object.keys(transactions).length} transactions found.`);
     return transactions;
-  }
-
-  private_parseFileContent(file, content, parsers) {
-    for (let i = 0; i < parsers.length; i += 1) {
-      const parser = parsers[i];
-      if (parser.canParse(content)) {
-        Logger.log(`Using ${parser.constructor.name} to parse the CSV file ${file}`);
-        return parser.parse(content);
-      }
-    }
-    Logger.info(content[0]);
-    throw new Error(`Unknown Source: ${content}`);
   }
 
   private_exportCsvs(groupedTransactions) {
