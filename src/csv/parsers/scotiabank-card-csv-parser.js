@@ -34,7 +34,7 @@ class ScotiabankCardCsvParser extends BaseCsvParser {
     return transactions;
   }
 
-  getDelim(){
-    return ','
+  getDelim() {
+    return ',';
   }
 }

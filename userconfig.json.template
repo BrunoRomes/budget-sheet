@@ -19,12 +19,6 @@
                 "startDate": "2022-01-13"
             }
         ],
-        "capitaloneCard": [
-            {
-                "account": "<FAKE_LAST_4_DIGITS>",
-                "event": "Fake Capital One"
-            }
-        ],
         "rogersCard": [{}],
         "scotiabankCard": [{}],
         "scotiabankChequing": [

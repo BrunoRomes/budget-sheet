@@ -7,7 +7,7 @@ class BaseCsvParser {
     return {};
   }
 
-  getDelim(){
-    return ','
+  getDelim() {
+    return ',';
   }
 }
