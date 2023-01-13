@@ -112,7 +112,7 @@ class CsvHandler {
       const file = files[fileIndex];
       for (let parserIndex = 0; parserIndex < this.parsers.length; parserIndex += 1) {
         const parser = this.parsers[parserIndex];
-        const delim = parser.getDelim()
+        const delim = parser.getDelim();
         const content = Utilities.parseCsv(file.getBlob().getDataAsString(), delim);
         if (content.length >= 1) {
           if (parser.canParse(content)) {

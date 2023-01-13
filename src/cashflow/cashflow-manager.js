@@ -23,10 +23,6 @@ class CashflowManager {
       sources.push(new BiweeklyExpenseCashflowSource(json.value, json.startDate, json.event));
     });
 
-    CASHFLOW_SOURCES_JSON.capitaloneCard.forEach((json) => {
-      sources.push(new CapitalOneCashflowSource(json.account, json.event));
-    });
-
     CASHFLOW_SOURCES_JSON.rogersCard.forEach((_json) => {
       sources.push(new RogersCardCashflowSource());
     });
