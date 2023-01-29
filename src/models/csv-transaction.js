@@ -19,4 +19,8 @@ class CsvTransaction {
     this.source = source;
     this.yearMonth = `${year}-${sanitizedMonth}`;
   }
+
+  toStr() {
+    return `date: ${this.year}/${this.month}/${this.day} description: ${this.description} value: ${this.value} source: ${this.source} key: ${this.key}`;
+  }
 }
