@@ -1,6 +1,6 @@
 class CibcCardCsvParser extends BaseCsvParser {
   canParse(content) {
-    if (content[0].length !== 5) {
+    if (content[0].length !== 5 || content[0][4].indexOf('*') <= -1) {
       return false;
     }
 
@@ -19,12 +19,21 @@ class CibcCardCsvParser extends BaseCsvParser {
     const transactions = {};
     for (let i = 0; i < content.length; i += 1) {
       const current = content[i];
+      const accountNumber = current[4].trim().replaceAll('*', '');
       const date = current[0].split('-');
       if (date[0] !== '') {
         const description = current[1];
         const debit = parseFloat(current[2]);
         const credit = parseFloat(current[3]);
-        const t = new CsvTransaction(date[0], date[1], date[2], description, debit > 0 ? -debit : credit, 'CIBC', '');
+        const t = new CsvTransaction(
+          date[0],
+          date[1],
+          date[2],
+          description,
+          debit > 0 ? -debit : credit,
+          `CIBC ${accountNumber}`,
+          ''
+        );
         let { key } = t;
         let count = 1;
         while (key in transactions) {
