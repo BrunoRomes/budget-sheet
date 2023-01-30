@@ -11,6 +11,9 @@ class MetadataSheet {
 
   updateMetadata(key, value) {
     this.metadata[key].value = value;
+  }
+
+  saveMetadata() {
     this.dataTable.setData(Object.values(this.metadata));
   }
 

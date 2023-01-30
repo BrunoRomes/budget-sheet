@@ -1,21 +1,28 @@
 class BaseSheetBootstrapper {
   constructor(sheetName) {
-    const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
     this.sheetName = sheetName;
+  }
+
+  init() {
+    const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(this.sheetName);
 
     if (sheet !== null) {
-      Logger.log(`${sheetName} sheet already exists. Skipping it.`);
+      Logger.log(`${this.sheetName} sheet already exists. Skipping it.`);
       this.alreadyExists = true;
       this.sheet = sheet;
     } else {
-      Logger.log(`Bootstrapping sheet ${sheetName}`);
+      Logger.log(`Bootstrapping sheet ${this.sheetName}`);
       this.alreadyExists = false;
-      this.sheet = SpreadsheetApp.getActiveSpreadsheet().insertSheet(sheetName, 0);
+      this.sheet = SpreadsheetApp.getActiveSpreadsheet().insertSheet(this.sheetName, 0);
     }
   }
 
-  bootstrap() {
-    if (this.alreadyExists) {
+  getSheetName() {
+    return this.sheetName;
+  }
+
+  bootstrap(force) {
+    if (force === false && this.alreadyExists) {
       return;
     }
     this.createSheet();

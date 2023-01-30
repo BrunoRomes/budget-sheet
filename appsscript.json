@@ -10,5 +10,9 @@
     "https://www.googleapis.com/auth/drive",
     "https://www.googleapis.com/auth/script.scriptapp",
     "https://www.googleapis.com/auth/script.container.ui"
-  ]
+  ],
+  "webapp": {
+    "executeAs": "USER_ACCESSING",
+    "access": "MYSELF"
+  }
 }
