@@ -1,6 +1,10 @@
 class CategorySheetBootstrapper extends BaseSheetBootstrapper {
   constructor() {
     super('Categories');
+  }
+
+  init() {
+    super.init();
     const dataStartRow = 4;
     const range = this.sheet.getRange(dataStartRow, 2, 200, 1);
     this.categoryValidationRule = SpreadsheetApp.newDataValidation().requireValueInRange(range).build();
