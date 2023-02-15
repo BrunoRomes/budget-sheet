@@ -73,8 +73,14 @@ function onOpen(_e) {
   SpreadsheetApp.getUi() // Or DocumentApp, SlidesApp, or FormApp.
     .createMenu('Finance')
     .addItem('Setup Triggers', 'createOnOpenTriggers')
+    .addItem('Plaid', 'doPlaid')
     // .addItem('Prepare to import CSVs', 'sanitizeCsvs')
     .addToUi();
+}
+
+function doPlaid() {
+  const plaid = new PlaidUpdater();
+  plaid.sync();
 }
 
 function createOnOpenTriggers() {

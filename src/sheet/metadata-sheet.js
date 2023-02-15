@@ -6,6 +6,7 @@ class MetadataSheet {
   }
 
   getMetadata(key) {
+    log.debug(`fetching key ${key}`);
     return this.metadata[key].value;
   }
 
