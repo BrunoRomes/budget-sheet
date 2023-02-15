@@ -49,11 +49,9 @@ function init() {
     // Init the spreadsheet: bootstraps and applies migrations.
     // This is slow, it will take a while.
     modalHelper.showWait('Bootstrapping...');
-    // new Bootstrap().run();
-    invokeBootstrap();
+    new Bootstrap().run();
     modalHelper.showWait('Applying migrations...');
     new MigrationManager().run();
-    // invokeMigrations();
     const csvHandler = new CsvHandler();
     modalHelper.showWait('Sanitizing CSVs...');
     csvHandler.sanitizeCsvs();

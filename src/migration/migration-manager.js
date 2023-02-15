@@ -32,60 +32,9 @@ class MigrationManager {
           Logger.log(`Migrating Sheet ${key} to version ${i}`);
           migration.run();
           this.metadataSheet.updateMetadata(key, i);
-          this.metadataSheet.saveMetadata();
         }
       }
     }
-  }
-
-  getLowestVersion() {
-    return this.metadataSheet.getLowestSheetVersion() + 1;
-  }
-
-  getNumberOfVersions() {
-    return Object.keys(this.versionMigrations).length;
-  }
-
-  getPendingMigrationsForVersion(version) {
-    const migrations = this.versionMigrations[`${version}`].flat();
-    const pendingMigrations = [];
-    for (let j = 0; j < migrations.length; j += 1) {
-      const migration = migrations[j];
-      const key = migration.getSheetName();
-      if (this.metadataSheet.getMetadata(key) < version) {
-        pendingMigrations.push({
-          version,
-          name: key,
-          index: j,
-        });
-      }
-    }
-
-    return pendingMigrations;
-  }
-
-  applySingleMigration(version, name, index) {
-    const migrations = this.versionMigrations[`${version}`].flat();
-    const migration = migrations[index];
-    const key = migration.getSheetName();
-    if (key !== name) {
-      throw new Error(
-        `Error During Migration: expected name ${name}, but got ${key} for version ${version} and index ${index}`
-      );
-    }
-
-    if (this.metadataSheet.getMetadata(key) < version) {
-      Logger.log(`Migrating Sheet ${key} to version ${version}`);
-      migration.run();
-      this.metadataSheet.updateMetadata(key, version);
-    }
-  }
-
-  updateMetadata(version, keys) {
-    keys.forEach((key) => {
-      this.metadataSheet.updateMetadata(key, version);
-    });
-    this.metadataSheet.saveMetadata();
   }
 }
 
