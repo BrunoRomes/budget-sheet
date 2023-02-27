@@ -7,15 +7,13 @@ class MetadataSheetBootstrapper extends BaseSheetBootstrapper {
     const versions = [
       ['Metadata', 1],
       ['Categories', 1],
+      ['All-Transactions', 1],
       ['Merchants', 1],
       ['Investments', 1],
       ['CashFlow', 1],
       ['Overview', 1],
+      ['Months', 1],
     ];
-    for (let i = 0; i < MONTHS.length; i += 1) {
-      versions.push([MONTHS[i], 1]);
-    }
-
     this.dataTable = new DataTable(this.sheet, 1, 2, 'Metadata', ['Name', 'Value'], 20).initialize(versions);
   }
 

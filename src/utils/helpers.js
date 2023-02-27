@@ -5,6 +5,17 @@ function groupBy(xs, key) {
     return agg;
   }, {});
 }
+function colToLetter(col) {
+  let temp;
+  let letter = '';
+  let column = col;
+  while (column > 0) {
+    temp = (column - 1) % 26;
+    letter = String.fromCharCode(temp + 65) + letter;
+    column = (column - temp - 1) / 26;
+  }
+  return letter;
+}
 
 function convertCurrencyToCad(currency, date) {
   let n = 1;
@@ -23,4 +34,11 @@ function convertCurrencyToCad(currency, date) {
     n += 1;
   }
   return undefined;
+}
+function titleCase(text) {
+  return text
+    .toLowerCase()
+    .replace(/^[-_]*(.)/, (_, c) => c.toUpperCase()) // Initial char (after -/_)
+    .replace(/[-_]+(.)/g, (_, c) => ` ${c.toUpperCase()}`); // First char after each -/_
+  // return text.replace(/^_*(.)|_+(.)/g, (s, c, d) => (c ? c.toUpperCase() : ` ${d.toUpperCase()}`));
 }

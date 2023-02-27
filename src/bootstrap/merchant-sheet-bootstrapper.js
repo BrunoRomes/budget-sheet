@@ -9,7 +9,7 @@ class MerchantSheetBootstrapper extends BaseSheetBootstrapper {
     this.dataTable = new DataTable(this.sheet, 1, 2, 'Merchants', ['Name', 'Category'], numRows)
       .withDataValidationRules([new ColumnValidationRule(3, this.categoryValidationRule)])
       .initialize([
-        ['Restaurant', 'Restaurant'],
+        ['Restaurant', 'Food And Drink'],
         ['SUPERMARKET', 'Grocery'],
         ['chevron', 'Gas'],
         ['mobil@', 'Gas'],
@@ -27,6 +27,7 @@ class MerchantSheetBootstrapper extends BaseSheetBootstrapper {
     }
 
     this.sheet.protect().setWarningOnly(true).setUnprotectedRanges([this.dataTable.getDataRange()]);
+    this.sheet.setColumnWidth(1, 20);
     this.sheet.setColumnWidth(2, 350);
     this.sheet.setColumnWidth(3, 200);
   }

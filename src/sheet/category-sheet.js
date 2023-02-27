@@ -14,27 +14,19 @@ class CategorySheet {
   }
 
   getCategories() {
-    Logger.log('Getting categories');
+    log.info('Getting categories');
     return this.dataTable.getDataAsMap('name');
   }
 
   getCategoriesAsArray() {
-    Logger.log('Getting categories');
+    log.info(`Getting ${this.dataTable.getDataAsArray().length} categories`);
     return this.dataTable.getDataAsArray();
   }
 
   sortCategories() {
-    Logger.log('Sorting categories');
+    log.info('Sorting categories');
     let data = this.dataTable.getDataAsArray();
     data = data.sort((a, b) => (a.name > b.name ? 1 : -1));
     this.dataTable.setData(data);
   }
 }
-
-// function testCategorySheet() {
-//   const sheet = new CategorySheet();
-//   const a = sheet.getCategories();
-//   sheet.sortCategories();
-//   const b = sheet.getCategories();
-//   Logger.log('ABC');
-// }

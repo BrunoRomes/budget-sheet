@@ -39,5 +39,9 @@ mv .clasp.json ../.clasp.json_test
 cd ../
 rm -rf ./dist
 
-echo "Creating sample userconfig.json, please customize it"
-#cp userconfig.json.template userconfig.json
+if test -f "userconfig.json"; then
+  echo "Update your existing userconfig.json as needed"
+else
+  echo "Creating sample userconfig.json, please customize it"
+  cp userconfig.json.template userconfig.json
+fi

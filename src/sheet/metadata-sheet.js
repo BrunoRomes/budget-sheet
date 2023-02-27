@@ -11,6 +11,7 @@ class MetadataSheet {
   }
 
   updateMetadata(key, value) {
+    log.info(`update metadata for key: ${key}, with value: ${value}`);
     this.metadata[key].value = value;
     this.dataTable.setData(Object.values(this.metadata));
   }
@@ -19,7 +20,7 @@ class MetadataSheet {
     // Positions 0 -> 17 holds sheets versions
     let lowest = VERSION;
     const data = this.dataTable.getDataAsArray();
-    for (let i = 0; i < 18; i += 1) {
+    for (let i = 0; i < data.length; i += 1) {
       lowest = Math.min(lowest, data[i].value);
     }
     return lowest;
@@ -27,7 +28,7 @@ class MetadataSheet {
 
   updateAllVersions(value) {
     const data = this.dataTable.getDataAsArray();
-    for (let i = 0; i < 18; i += 1) {
+    for (let i = 0; i < data.length; i += 1) {
       data[i].value = value;
     }
     this.dataTable.setData(data);
@@ -40,5 +41,5 @@ class MetadataSheet {
 //   const a = sheet.getMetadata('Categories');
 //   sheet.updateMetadata('Categories', 0);
 //   const b = sheet.getMetadata('Categories');
-//   Logger.log('ABC');
+//   log.info('ABC');
 // }

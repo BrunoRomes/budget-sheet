@@ -4,7 +4,7 @@ class Bootstrap {
   }
 
   run() {
-    Logger.log('Attempting to run bootstrap');
+    log.info('Attempting to run bootstrap');
     new MetadataSheetBootstrapper().bootstrap();
 
     const categorySheetBoostrapper = new CategorySheetBootstrapper();
@@ -13,11 +13,11 @@ class Bootstrap {
     const categoryValidationRule = categorySheetBoostrapper.getValidationRule();
     new MerchantSheetBootstrapper(categoryValidationRule).bootstrap();
 
-    for (let i = MONTHS.length - 1; i >= 0; i -= 1) {
-      new MonthSheetBootstrapper(MONTHS[i], categoryValidationRule).bootstrap();
-    }
+    new AllTransactionsSheetBootstrapper(categoryValidationRule).bootstrap();
+
     new InvestmentSheetBootstrapper(categoryValidationRule).bootstrap();
     new CashflowSheetBootstrapper().bootstrap();
+    new MonthSheetBootstrapper('Months').bootstrap();
     new OverviewSheetBootstrapper().bootstrap();
 
     const defaultSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(this.defaultSheetName);
@@ -27,7 +27,7 @@ class Bootstrap {
   }
 
   reset() {
-    Logger.log('Reseting all sheets.');
+    log.info('Reseting all sheets.');
     const defaultSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(this.defaultSheetName);
     if (defaultSheet == null) {
       SpreadsheetApp.getActiveSpreadsheet().insertSheet(this.defaultSheetName);

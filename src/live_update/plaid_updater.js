@@ -1,4 +1,5 @@
 /*
+For now this class is only a playground, more dev work will happen here
 Plaid Categories
 INCOME
 TRANSFER_IN
@@ -30,11 +31,9 @@ class PlaidUpdater {
     this.plaid_cfg = jsonObject.plaid_cfg;
     this.live_sources = jsonObject.live_update_sources;
     this.endpoint = `https://development.plaid.com`;
-    log.debug(this.plaid_cfg);
-    // log.debug(this.live_sources);
   }
 
-  private_generateRequest(additionalFields, accessToken) {
+  private_generateRequest(additionalFields, accessToken, anonymous = false) {
     const plaidClientId = this.plaid_cfg.client_id;
     const plaidSecret = this.plaid_cfg.secret;
 
@@ -45,11 +44,14 @@ class PlaidUpdater {
 
     // data is a parameter plaid requires for the post request
     // created via the plaid quickstart app (node)
-    const baseData = {
-      access_token: accessToken,
-      client_id: plaidClientId,
-      secret: plaidSecret,
-    };
+    let baseData = {};
+    if (!anonymous) {
+      baseData = {
+        access_token: accessToken,
+        client_id: plaidClientId,
+        secret: plaidSecret,
+      };
+    }
     const data = { ...baseData, ...additionalFields };
     // pass in the necessary headers
     // pass the payload as a json object
@@ -67,22 +69,29 @@ class PlaidUpdater {
     const parameters = this.private_generateRequest({}, accessToken);
     const url = `${this.endpoint}/accounts/balance/get`;
     const response = UrlFetchApp.fetch(url, parameters);
-    log.debug(response);
-    return JSON.parse(response).accounts;
+    const responseCode = response.getResponseCode();
+    log.debug(`response code is: ${responseCode}`);
+    if (parseInt(responseCode, 10) >= 300) {
+      const errorMessage = JSON.parse(response.getContentText()).error_message;
+      log.debug(`error message is ${errorMessage}`);
+      throw new Error(errorMessage);
+    }
+    const respJson = JSON.parse(response.getContentText());
+    return respJson.accounts;
   }
 
-  getLiabilities(accessToken) {
-    const parameters = this.private_generateRequest({}, accessToken);
-    const url = `${this.endpoint}/liabilities/get`;
+  getCategories() {
+    const parameters = this.private_generateRequest({}, '', true);
+    const url = `${this.endpoint}/categories/get`;
     const response = UrlFetchApp.fetch(url, parameters);
-    log.debug(response);
+    return JSON.parse(response).categories;
   }
 
-  getTransactionHistory(month, accessToken, accountId) {
+  getTransactionHistory(accessToken, accountId) {
     const COUNT = 500;
-    const startDate = `${YEAR}-${month}-01`;
-    // TODO: fix end date to be the month correct last day
-    const endDate = `${YEAR}-${month}-28`;
+    // TODO: save last seen date to make it faster
+    const startDate = `${YEAR}-01-01`;
+    const endDate = `${YEAR}-12-31`;
 
     // data is a parameter plaid requires for the post request
     // created via the plaid quickstart app (node)
@@ -102,58 +111,54 @@ class PlaidUpdater {
 
   sync() {
     log.info('Plaid::sync');
+    const resp = new Map();
     this.live_sources.forEach((source) => {
+      let numberTransactions = 0;
       const plaidAccessToken = source.plaid_access_token;
-      this.getLiabilities(plaidAccessToken);
-
-      // const transactions = this.getTransactionHistory('02', plaidAccessToken);
-      const ss = SpreadsheetApp.getActiveSpreadsheet();
-      const sheet = ss.getSheetByName('TEST_PLAID');
-      sheet.clearContents();
-      sheet.appendRow(['date', 'merchant', 'amount', 'category', 'category2', 'account']);
+      const categories = new CategorySheet().getCategories();
       // TODO make async
-      this.getAccounts(plaidAccessToken).forEach((acc) => {
-        log.info(`---------- on account ${acc.account_id} -------------`);
+      const tSheet = new TransactionsSheet();
+      const transactions = tSheet.getExpensesAsMap();
+      let accounts = [];
+      try {
+        accounts = this.getAccounts(plaidAccessToken);
+      } catch (err) {
+        resp[source.name] = err.message;
+      }
+      accounts.forEach((acc) => {
+        log.info(`---------- on account ${JSON.stringify(acc)} -------------`);
+        const plaidTransactions = this.getTransactionHistory(plaidAccessToken, acc.account_id);
+        plaidTransactions.forEach((t) => {
+          const key = '';
+          let cat = titleCase(t.personal_finance_category.primary);
+          if (categories[cat] === undefined) {
+            cat = 'Other';
+          }
+          const dateArray = t.date.split('-');
+          const date = new Date(`${dateArray[0]}-${dateArray[1]}-${dateArray[2]}T00:00:00`);
 
-        const transactions = this.getTransactionHistory('01', plaidAccessToken, acc.account_id);
-        transactions.forEach((t) => {
-          log.debug(JSON.stringify(t));
-          const row = [
-            t.date,
-            `${t.name}`, // -${t.merchant_name}`,
-            t.amount,
-            t.category[1],
-            t.personal_finance_category.detailed,
-            acc.name,
-          ];
-          sheet.appendRow(row);
+          const transaction = new Transaction(
+            key,
+            date,
+            t.name,
+            Math.abs(t.amount),
+            cat,
+            'Plaid',
+            categories[cat].is_income ? 'Yes' : 'No',
+            categories[cat].is_investment ? 'Yes' : 'No',
+            acc.official_name
+          );
+          transactions[transaction.key] = transaction;
+          // TODO: check how many are new (not seen)
+          numberTransactions += 1;
         });
-      });
-
-      // accounts.forEach((account) => {
-      //   Logger.log(`Account: ${account.official_name}`);
-      //   Logger.log(`Account id: ${account.account_id}`);
-      //   Logger.log(`Balance: ${account.balances.current}`);
-      //   this.getTransactionHistory('01', plaidAccessToken, account.account_id);
-      // });
-    });
+      }); // accounts for each
+      if (resp[source.name] === undefined) {
+        log.info(`setting ${source.name} to ${numberTransactions}`);
+        resp[source.name] = `${numberTransactions} transactions imported`;
+      }
+      tSheet.setExpenses(Object.values(transactions));
+    }); // live sources
+    return resp;
   }
 }
-
-function run() {
-  log.info('run');
-  const plaid = new PlaidUpdater();
-  plaid.sync();
-  /* plaid.live_sources.forEach((source) => {
-    const plaidAccessToken = source.plaid_access_token;
-    plaid.getAccounts(plaidAccessToken).forEach((acc) => {
-      log.info(`---------- on account ${acc.account_id} -------------`)
-      log.info(JSON.stringify(acc))
-      const trans = plaid.getTransactionHistory('01', plaidAccessToken, acc.account_id)
-    });
-  }); */
-}
-// function onEdit(e) {
-//   Logger.log(e.range.getSheet().getName());
-//   Logger.log(`on edit ${JSON.stringify(e)}`);
-// }

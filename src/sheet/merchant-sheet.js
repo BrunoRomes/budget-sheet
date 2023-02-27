@@ -6,7 +6,7 @@ class MerchantSheet {
   }
 
   getMerchants() {
-    Logger.log('Getting Merchants');
+    log.info('Getting Merchants');
     return this.dataTable.getDataAsArray();
   }
 }
@@ -15,5 +15,5 @@ class MerchantSheet {
 //   const sheet = new MerchantSheet();
 //   const a = sheet.getMerchants();
 //   // var b = sheet.getCategories();
-//   Logger.log('ABC');
+//   log.info('ABC');
 // }

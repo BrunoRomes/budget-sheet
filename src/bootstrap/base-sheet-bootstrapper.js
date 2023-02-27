@@ -4,11 +4,11 @@ class BaseSheetBootstrapper {
     this.sheetName = sheetName;
 
     if (sheet !== null) {
-      Logger.log(`${sheetName} sheet already exists. Skipping it.`);
+      log.info(`${sheetName} sheet already exists. Skipping it.`);
       this.alreadyExists = true;
       this.sheet = sheet;
     } else {
-      Logger.log(`Bootstrapping sheet ${sheetName}`);
+      log.info(`Bootstrapping sheet ${sheetName}`);
       this.alreadyExists = false;
       this.sheet = SpreadsheetApp.getActiveSpreadsheet().insertSheet(sheetName, 0);
     }
@@ -24,10 +24,10 @@ class BaseSheetBootstrapper {
   }
 
   createSheet() {
-    Logger.log("'createSheet' from BaseSheet called. Nothing will be done here.");
+    log.info("'createSheet' from BaseSheet called. Nothing will be done here.");
   }
 
   applyFormat() {
-    Logger.log("'applyFormat' from BaseSheet called. Nothing will be done here.");
+    log.info("'applyFormat' from BaseSheet called. Nothing will be done here.");
   }
 }

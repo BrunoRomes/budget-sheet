@@ -24,10 +24,30 @@ This project aims at generating and maintaining a Google Spreadsheet for budget 
    Likely this operation will timeout and you will receive an error (see #12). A quick workaround is to open the sheet again. This will trigger the script to continue the setup. But you might want to delete the last sheet created before the timeout so the script can pick it up again and properly finish its setup this time around. You can do that by going to the script (`Extension > App Script`) and checking the logs right before the timeout error.
 1. Manually create the folders you listed in your `userconfig.json` and move your sheet there. To leave everything in your Google Drive root folder, leave it empty arrays
 
+### How to configure plaid sources
+https://plaid.com/docs/quickstart/
+
+and the format in json config is:
+
+```json
+"live_update_sources": [
+  {
+    "name" : "Bank Name",
+    "plaid_access_token": "access-development-aaaaaaaaaaaaaaaaa"
+  },
+],
+```
+
 ### Usage
 
 1. Export the CSV files from you bank/brokers and upload to the csv folder you set up above
-1. Everytime the sheet is open the scripts will automatically check for new migrations and parse the CSV files. It auto detects which bank it is based on each CSVs structure (which might break in the future if different banks has the exact same structure)
+2. Everytime the sheet is open the scripts will automatically check for new migrations.
+
+
+You can now use the menu items:
+1. `Import CSVs` -> Imports transactions from a CSV file, it auto detects which bank it is based on each CSVs structure (which might break in the future if different banks has the exact same structure)
+2. `Plaid Sync` -> Runs plaid on all targets in `live_update_sources`
+3. `Classify Transactions` -> Runs the merchant based classifier on 'All-Transactions' sheets
 
 ### Deploying
 

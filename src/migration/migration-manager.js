@@ -3,22 +3,17 @@ class MigrationManager {
     this.metadataSheet = new MetadataSheet();
     this.versionMigrations = {
       1: [], // No migration, we always start in version 1
-      2: [
-        MonthMigrationV2.forAllMonths(),
-        new InvestmentMigrationV2(),
-        new OverviewMigrationV2(),
-        new CashflowMigrationV2(),
-      ],
-      3: [new CashflowMigrationV3(), new OverviewMigrationV3()],
+      2: [new CashflowMigrationV2()],
+      3: [new CashflowMigrationV3()],
     };
   }
 
   run() {
-    Logger.log('Starting Sheet Migrations');
+    log.info('Starting Sheet Migrations');
     const startingVersion = this.metadataSheet.getLowestSheetVersion() + 1;
     this.applyMigrations(startingVersion, VERSION);
     this.metadataSheet.updateAllVersions(VERSION);
-    Logger.log('Sheet migrations completed.');
+    log.info('Sheet migrations completed.');
   }
 
   applyMigrations(startingVersion, targetVersion) {
@@ -29,7 +24,7 @@ class MigrationManager {
         const migration = migrations[j];
         const key = migration.getSheetName();
         if (this.metadataSheet.getMetadata(key) < i) {
-          Logger.log(`Migrating Sheet ${key} to version ${i}`);
+          log.info(`Migrating Sheet ${key} to version ${i}`);
           migration.run();
           this.metadataSheet.updateMetadata(key, i);
         }
@@ -41,5 +36,5 @@ class MigrationManager {
 function testMigrationManager() {
   const m = new MigrationManager();
   m.run();
-  Logger.log('ABC');
+  log.info('ABC');
 }

@@ -47,5 +47,5 @@ class CashflowManager {
 //   UserConfig.loadConfig();
 //   const a = new CashflowManager();
 //   const b = a.deserializeSources();
-//   Logger.log('abc');
+//   log.info('abc');
 // }

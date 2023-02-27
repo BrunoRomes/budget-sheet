@@ -1,5 +1,5 @@
 {
-    "year": "2022",
+    "year": "2023",
     "sheet_folder_path": ["Budget"],
     "csvs_folder_path": ["Budget", "csvs"],
     "cashflow_sources": {
@@ -33,5 +33,11 @@
                 "event": "Fake Tangerine Acc"
             }
         ]
-    }
+    },
+    "live_update_sources": [
+        {
+            "name" : "name",
+            "plaid_access_token": "access-development-uuid"
+        },
+    ],
 }
