@@ -48,23 +48,22 @@ class TransactionClassifier {
       if (expense.category === '') {
         expense.category = 'Other';
       }
-      const category = this.categoriesMap[expense.category];
+      let category = this.categoriesMap[expense.category];
       const { classificator } = expense;
 
       // get category
       if (classificator !== 'Manual') {
-        log.info(`not manual classificator is ${classificator}`);
-        if (category.name === 'Other' || classificator === 'Plaid') {
-          // find the category using the merchant sheet
-          const newCategory = this.classifySingleExpense(expense);
-          if (newCategory.name === 'Other' && category.name !== 'Other') {
-            // do not do it, we had a best one
-            log.debug(`should not change category ${category.name}`);
-          } else {
-            category.name = newCategory.name;
-            expense.classificator = 'Merchants';
-          }
-          log.info(`the new category is ${category.name}`);
+        log.debug(`classificator is ${classificator}`);
+        // find the category using the merchant sheet
+        const newCategory = this.classifySingleExpense(expense);
+        if (newCategory.name === 'Other' && category.name !== 'Other') {
+          // do not do it, we had a best one
+          log.debug(`should not change category ${category.name}`);
+        } else {
+          log.debug(`the new category is ${newCategory.name}`);
+          expense.category = newCategory.name;
+          category = newCategory;
+          expense.classificator = 'Merchants';
         }
       }
 
@@ -77,7 +76,7 @@ class TransactionClassifier {
       } else {
         this.usedCategories[category.name] = { category: category.name };
       }
-      log.info(`Expense ${JSON.stringify(expense)}`);
+      log.debug(`Categorized Expense ${JSON.stringify(expense)}`);
     });
     expensesToRemove.forEach((toRemove) => {
       delete this.expensesMap[toRemove];
@@ -89,6 +88,7 @@ class TransactionClassifier {
     if (merchant === undefined) return '';
     const merchantClean = merchant.toLowerCase().replace('(', ' ').replace(')', ' ');
     merchantClean.replace(/\W/g, '');
+    log.debug(`merchant clean is ${merchantClean}`);
 
     for (let i = 0; i < this.merchants.length; i += 1) {
       const merchantData = this.merchants[i];
@@ -100,6 +100,7 @@ class TransactionClassifier {
         match = merchantDataPattern.toLowerCase().match(merchantClean);
       }
       if (match) {
+        log.debug(`was a match for merchant ${merchantClean}`);
         return this.categoriesMap[merchantData.category] || this.categoriesMap.Other;
       }
     }
