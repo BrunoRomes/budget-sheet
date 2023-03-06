@@ -70,17 +70,54 @@ class TransactionsSheet {
     return transactions;
   }
 
+  setExpensesData(transactions) {
+    const formattedTransactions = transactions.sort((a, b) => b.date - a.date);
+    this.mainTable.setData(formattedTransactions);
+  }
+
+  setNewExpenses(transactions) {
+    const allTransactions = this.mainTable.getDataAsArray();
+    allTransactions.push(transactions);
+    return this.setExpenses(allTransactions);
+  }
+
   setExpenses(transactions) {
     log.info(`Writing ${transactions.length} expenses`);
-    const formattedTransactions = transactions.sort((a, b) => a.date - b.date);
+
+    const folder = changeDirectory(CSVS_FOLDER_PATH);
+    const keysCsvFilename = SpreadsheetApp.getActive().getName() + KEYS_FILENAME_SUFFIX;
+    const filesIt = folder.getFilesByName(keysCsvFilename);
+    if (!filesIt.hasNext()) {
+      folder.createFile(keysCsvFilename, '');
+    }
+    // Set does not work here, why ?
+    const keysContent = [];
+    let keysStr = '';
+    if (filesIt.hasNext()) {
+      const csv = filesIt.next().getBlob().getDataAsString();
+      csv.split('\n').forEach((line) => {
+        keysContent.push(line);
+        keysStr += `\n${line}`;
+      });
+    }
+    log.info(`found ${keysContent.length} existing keys`);
+
+    const newTransactions = transactions.filter((t) => !keysContent.includes(t.key)).sort((a, b) => a.date - b.date);
+    const formattedTransactions = transactions.sort((a, b) => b.date - a.date);
     this.mainTable.setData(formattedTransactions);
+    const files = folder.getFilesByName(keysCsvFilename).next();
+    Object.values(newTransactions).forEach((k) => {
+      keysStr += `\n${k.key}`;
+    });
+    files.setContent(keysStr);
+    return newTransactions.length;
   }
 
   refresh() {
     // TODO: alex working on this.
     const classifier = new TransactionClassifier();
     classifier.classifyExpensesFromMap(this.getExpensesAsMap());
-    this.setExpenses(classifier.getExpensesArray());
+    this.setExpensesData(classifier.getExpensesArray());
   }
 }
 TransactionsSheet.columnDate = 2;

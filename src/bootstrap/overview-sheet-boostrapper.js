@@ -119,9 +119,6 @@ class OverviewSheetBootstrapper extends BaseSheetBootstrapper {
         .setTitle('Total VS Category')
         .build()
     );
-
-    const image = this.sheet.insertImage(REFRESH_BUTTON_IMAGE, 15, 2);
-    image.assignScript('refresh');
   }
 
   applyFormat() {

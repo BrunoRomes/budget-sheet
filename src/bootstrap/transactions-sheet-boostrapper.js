@@ -22,9 +22,6 @@ class AllTransactionsSheetBootstrapper extends BaseSheetBootstrapper {
     if (this.mainTable.getHeadersAndDataRange().getFilter() === null) {
       this.mainTable.getHeadersAndDataRange().createFilter();
     }
-
-    const image = this.sheet.insertImage(REFRESH_BUTTON_IMAGE, 15, 20);
-    image.assignScript('refresh');
   }
 
   applyFormat() {
@@ -37,11 +34,17 @@ class AllTransactionsSheetBootstrapper extends BaseSheetBootstrapper {
       protections[i].remove();
     }
 
-    this.sheet.protect().setWarningOnly(true).setUnprotectedRanges([this.mainTable.getDataRange()]);
+    this.sheet
+      .protect()
+      .setWarningOnly(true)
+      .setUnprotectedRanges([this.mainTable.getDataRange(), this.mainTable.getTitleRange()]);
 
     this.sheet.setColumnWidth(1, 20);
     this.sheet.setColumnWidth(TransactionsSheet.columnDescription, 250);
     this.sheet.setColumnWidth(TransactionsSheet.columnCategory, 150);
+    this.sheet.setColumnWidth(TransactionsSheet.columnClassificator, 100);
+    this.sheet.setColumnWidth(TransactionsSheet.columnIsIncome, 100);
+    this.sheet.setColumnWidth(TransactionsSheet.columnSource, 100);
     this.sheet.setColumnWidth(TransactionsSheet.columnKey, 250);
 
     this.sheet.setFrozenRows(3);

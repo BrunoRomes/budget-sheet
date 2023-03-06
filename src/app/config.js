@@ -5,6 +5,7 @@ let CSVS_FOLDER_PATH = [];
 let CASHFLOW_SOURCES_JSON = [];
 let YEAR = 2023;
 let PLAID_CFG_JSON;
+const KEYS_FILENAME_SUFFIX = 'TransactionKeys.csv';
 
 REFRESH_BUTTON_IMAGE =
   'https://docs.google.com/drawings/d/e/2PACX-1vSw_LSUvA5qfxCWjnyskpr1RQzzspMIwjProt3hHHiW9F6Tr5KHPIxFOed2CjQk60LGmO6H8sEZ4fNT/pub?w=279&h=100';

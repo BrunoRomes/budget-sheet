@@ -71,8 +71,11 @@ class TransactionClassifier {
         expensesToRemove.push(expense.key);
       } else if (category.is_income) {
         expense.is_income = `Yes`;
+        expense.is_investment = `No`;
+        expense.amount = Math.abs(expense.amount);
       } else if (category.is_investment) {
         expense.is_investment = `Yes`;
+        expense.is_income = `No`;
       } else {
         this.usedCategories[category.name] = { category: category.name };
       }

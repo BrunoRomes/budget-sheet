@@ -87,11 +87,11 @@ class PlaidUpdater {
     return JSON.parse(response).categories;
   }
 
-  getTransactionHistory(accessToken, accountId) {
+  getTransactionHistory(accessToken, accountId, startDate) {
     const COUNT = 500;
     // TODO: save last seen date to make it faster
-    const startDate = `${YEAR}-01-01`;
     const endDate = `${YEAR}-12-31`;
+    log.info(`getting transactions for account ${accountId} from ${startDate} to ${endDate}`);
 
     // data is a parameter plaid requires for the post request
     // created via the plaid quickstart app (node)
@@ -113,7 +113,6 @@ class PlaidUpdater {
     log.info('Plaid::sync');
     const resp = new Map();
     this.live_sources.forEach((source) => {
-      let numberTransactions = 0;
       const plaidAccessToken = source.plaid_access_token;
       const categories = new CategorySheet().getCategories();
       // TODO make async
@@ -125,21 +124,40 @@ class PlaidUpdater {
       } catch (err) {
         resp[source.name] = err.message;
       }
+      // const lastDateArray = lastDate.split('-');
+      // const lastDateDay = parseInt(lastDateArray[2], 10);
+      // scriptProperties.setProperty(
+      //   `${accountId}_date`,
+      //   `${lastDateArray[0]}-${lastDateArray[1]}-${Math.max(1, lastDateDay)}`
+      // );
+      const scriptProperties = PropertiesService.getScriptProperties();
       accounts.forEach((acc) => {
         log.info(`---------- on account ${JSON.stringify(acc)} -------------`);
-        const plaidTransactions = this.getTransactionHistory(plaidAccessToken, acc.account_id);
+        let lastDateProcessed = scriptProperties.getProperty(`${acc.account_id}_date`);
+        log.info(`last date processed ${lastDateProcessed}`);
+        if (lastDateProcessed === undefined || lastDateProcessed === null) {
+          lastDateProcessed = `${YEAR}-01-02`;
+        }
+        const lastDate = dateObjectFromString(lastDateProcessed);
+        const startDate = formatDate(lastDate.setDate(lastDate.getDate() - 1));
+
+        const plaidTransactions = this.getTransactionHistory(plaidAccessToken, acc.account_id, startDate);
+        let maxDateProcessed = lastDate;
         plaidTransactions.forEach((t) => {
           const key = '';
           let cat = titleCase(t.personal_finance_category.primary);
           if (categories[cat] === undefined) {
             cat = 'Other';
           }
-          const dateArray = t.date.split('-');
-          const date = new Date(`${dateArray[0]}-${dateArray[1]}-${dateArray[2]}T00:00:00`);
+          const transactionDate = dateObjectFromString(t.date);
+          if (transactionDate > maxDateProcessed) {
+            log.info(`making last day processed to ${transactionDate}`);
+            maxDateProcessed = transactionDate;
+          }
 
           const transaction = new Transaction(
             key,
-            date,
+            transactionDate,
             t.name,
             Math.abs(t.amount),
             cat,
@@ -150,14 +168,15 @@ class PlaidUpdater {
           );
           transactions[transaction.key] = transaction;
           // TODO: check how many are new (not seen)
-          numberTransactions += 1;
         });
+        log.info(`Setting the last day processed for account ${acc.account_id} is ${maxDateProcessed}`);
+        scriptProperties.setProperty(`${acc.account_id}_date`, formatDate(maxDateProcessed));
       }); // accounts for each
+      const nTrans = tSheet.setExpenses(Object.values(transactions));
       if (resp[source.name] === undefined) {
-        log.info(`setting ${source.name} to ${numberTransactions}`);
-        resp[source.name] = `${numberTransactions} transactions imported`;
+        resp[source.name] = `${nTrans} transactions imported`;
       }
-      tSheet.setExpenses(Object.values(transactions));
+      tSheet.applyFormat();
     }); // live sources
     return resp;
   }

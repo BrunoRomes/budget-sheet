@@ -20,7 +20,7 @@ function lineNumber() {
 
 class log {
   static log_level() {
-    return 3;
+    return 1;
   }
 
   static info(str) {

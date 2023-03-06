@@ -60,9 +60,6 @@ class InvestmentSheetBootstrapper extends BaseSheetBootstrapper {
       .setTitle('Value VS Category')
       .build();
     this.sheet.insertChart(chart);
-
-    const image = this.sheet.insertImage(REFRESH_BUTTON_IMAGE, 12, 28);
-    image.assignScript('refresh');
   }
 
   applyFormat() {
@@ -72,12 +69,7 @@ class InvestmentSheetBootstrapper extends BaseSheetBootstrapper {
     Formatter.applyDefaultTableFormat(this.investmentsTable);
     Formatter.applyDefaultTableFormat(this.classificationTable);
 
-    const protections = this.sheet.getProtections(SpreadsheetApp.ProtectionType.RANGE);
-    for (let i = 0; i < protections.length; i += 1) {
-      protections[i].remove();
-    }
-
-    this.sheet.protect().setWarningOnly(true).setUnprotectedRanges([this.investmentsTable.getDataRange()]);
+    this.sheet.protect().setWarningOnly(true);
 
     this.sheet.setColumnWidth(4, 320);
     this.sheet.setColumnWidth(5, 150);

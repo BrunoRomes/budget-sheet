@@ -1,7 +1,7 @@
 class CsvHandler {
   constructor() {
-    this.folder = this.private_changeDirectory(CSVS_FOLDER_PATH);
-    this.sanitized_csv_suffix = 'Sanitized Transactions.csv';
+    this.folder = changeDirectory(CSVS_FOLDER_PATH);
+    this.sanitized_csv_filename = 'Sanitized Transactions.csv';
     this.parsers = [
       new SanitizedCsvParser(),
       new TangerineCsvParser(),
@@ -39,9 +39,9 @@ class CsvHandler {
     // TODO: alex working on this.....
     log.info('Importing Transactions');
     let nTrans = 0;
-    const filesIt = this.folder.getFilesByName(this.sanitized_csv_suffix);
+    const filesIt = this.folder.getFilesByName(this.sanitized_csv_filename);
     if (filesIt.hasNext()) {
-      log.info(`Importing transactions from file ${this.sanitized_csv_suffix}`);
+      log.info(`Importing transactions from file ${this.sanitized_csv_filename}`);
       const file = filesIt.next();
       const transactions = this.private_parseCsvs([file]);
       this.private_updateTransactions(transactions);
@@ -81,19 +81,6 @@ class CsvHandler {
     sheet.setExpenses(Object.values(expenses));
   }
 
-  private_changeDirectory(absolutePath) {
-    let folder = DriveApp.getRootFolder();
-    for (let i = 0; i < absolutePath.length; i += 1) {
-      const folders = folder.getFoldersByName(absolutePath[i]);
-      if (folders.hasNext()) {
-        folder = folders.next();
-      } else {
-        throw new Error(`Unknown Folder: ${absolutePath[i]}`);
-      }
-    }
-    return folder;
-  }
-
   private_listCsvs() {
     const filesByType = this.folder.getFilesByType('text/csv');
     const files = [];
@@ -127,7 +114,7 @@ class CsvHandler {
   }
 
   private_exportCsv(transactions) {
-    const fileName = this.sanitized_csv_suffix;
+    const fileName = this.sanitized_csv_filename;
     const rows = ['Key,Source,Year,Month,Day,Description,Value,YearMonth'];
     for (let i = 0; i < transactions.length; i += 1) {
       const t = transactions[i];
@@ -167,7 +154,7 @@ class CsvHandler {
     for (let i = 0; i < files.length; i += 1) {
       const file = files[i];
       const name = file.getName();
-      if (!name.endsWith(this.sanitized_csv_suffix) || name.substring(0, 8) < threshold) {
+      if (!name.endsWith(this.sanitized_csv_filename) || name.substring(0, 8) < threshold) {
         log.info(`Deleting file ${name}`);
         file.setTrashed(true);
       }

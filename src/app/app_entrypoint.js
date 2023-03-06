@@ -59,12 +59,25 @@ function reset() {
 function onOpen(_e) {
   SpreadsheetApp.getUi() // Or DocumentApp, SlidesApp, or FormApp.
     .createMenu('Finance')
-    .addItem('Setup Triggers', 'createOnOpenTriggers')
     .addItem('Plaid Sync', 'doPlaid')
     .addItem('Import CSVs', 'importCsvs')
     .addItem('Classify Transactions', 'classifyTransactions')
     .addToUi();
+
+  SpreadsheetApp.getUi() // Or DocumentApp, SlidesApp, or FormApp.
+    .createMenu('Finance-Maintenance')
+    .addItem('Setup Triggers', 'createOnOpenTriggers')
+    .addItem('Clean Properties', 'cleanProperties')
+    .addItem('Delete Keys', 'deleteKeys')
+    .addToUi();
 }
+
+function cleanProperties() {
+  log.info(`${JSON.stringify(PropertiesService.getScriptProperties().getProperties())}`);
+  PropertiesService.getScriptProperties().deleteAllProperties();
+}
+
+function deleteKeys() {}
 
 function classifyTransactions() {
   new TransactionsSheet().refresh();
