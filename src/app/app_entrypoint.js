@@ -77,7 +77,18 @@ function cleanProperties() {
   PropertiesService.getScriptProperties().deleteAllProperties();
 }
 
-function deleteKeys() {}
+function deleteKeys() {
+  const keysCsvFilename = SpreadsheetApp.getActive().getName() + KEYS_FILENAME_SUFFIX;
+  const folder = changeDirectory(CSVS_FOLDER_PATH);
+  log.info(`keys file is ${keysCsvFilename} and folder ${folder.getName()}`);
+  const filesIt = folder.getFilesByName(keysCsvFilename);
+  if (filesIt.hasNext()) {
+    log.info('setting trashed');
+    filesIt.next().setTrashed(true);
+  } else {
+    log.info('file not found');
+  }
+}
 
 function classifyTransactions() {
   new TransactionsSheet().refresh();
