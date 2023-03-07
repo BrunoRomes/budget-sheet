@@ -78,6 +78,7 @@ function cleanProperties() {
 }
 
 function deleteKeys() {
+  UserConfig.loadConfig();
   const keysCsvFilename = SpreadsheetApp.getActive().getName() + KEYS_FILENAME_SUFFIX;
   const folder = changeDirectory(CSVS_FOLDER_PATH);
   log.info(`keys file is ${keysCsvFilename} and folder ${folder.getName()}`);
