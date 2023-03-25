@@ -1,6 +1,8 @@
 class BrimCardCsvParser extends BaseCsvParser {
   canParse(content) {
-    return content[0].length === 8 && content[0][0] === 'No' && content[0][1] === 'Transaction Date';
+    const canParse = content[0].length === 8 && content[0][0] === 'No' && content[0][1] === 'Transaction Date';
+    log.info(`BrimCardParser::canParse? ${canParse}`);
+    return canParse;
   }
 
   parse(content) {

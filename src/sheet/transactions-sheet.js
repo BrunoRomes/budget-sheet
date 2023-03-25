@@ -52,7 +52,7 @@ class TransactionsSheet {
 
   getExpenses() {
     log.info(`Getting expenses`);
-    const data = this.expensesTable.getDataAsArray();
+    const data = this.mainTable.getDataAsArray();
     const transactions = [];
     data.forEach((entry) => {
       // (key, date, description, value, category, source)
@@ -100,10 +100,14 @@ class TransactionsSheet {
         keysStr += `\n${line}`;
       });
     }
-    log.info(`found ${keysContent.length} existing keys`);
-
     const newTransactions = transactions.filter((t) => !keysContent.includes(t.key)).sort((a, b) => a.date - b.date);
-    const formattedTransactions = transactions.sort((a, b) => b.date - a.date);
+    const existingTransactions = this.getExpenses();
+    if (newTransactions && newTransactions.length > 0) {
+      newTransactions.forEach((t) => {
+        existingTransactions.push(t);
+      });
+    }
+    const formattedTransactions = existingTransactions.sort((a, b) => b.date - a.date);
     this.mainTable.setData(formattedTransactions);
     const files = folder.getFilesByName(keysCsvFilename).next();
     Object.values(newTransactions).forEach((k) => {

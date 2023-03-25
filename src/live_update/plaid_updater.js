@@ -115,21 +115,15 @@ class PlaidUpdater {
     this.live_sources.forEach((source) => {
       const plaidAccessToken = source.plaid_access_token;
       const categories = new CategorySheet().getCategories();
-      // TODO make async
+      // TODO make async, is it possible?
       const tSheet = new TransactionsSheet();
-      const transactions = tSheet.getExpensesAsMap();
+      const transactions = {};
       let accounts = [];
       try {
         accounts = this.getAccounts(plaidAccessToken);
       } catch (err) {
         resp[source.name] = err.message;
       }
-      // const lastDateArray = lastDate.split('-');
-      // const lastDateDay = parseInt(lastDateArray[2], 10);
-      // scriptProperties.setProperty(
-      //   `${accountId}_date`,
-      //   `${lastDateArray[0]}-${lastDateArray[1]}-${Math.max(1, lastDateDay)}`
-      // );
       const scriptProperties = PropertiesService.getScriptProperties();
       accounts.forEach((acc) => {
         log.info(`---------- on account ${JSON.stringify(acc)} -------------`);
