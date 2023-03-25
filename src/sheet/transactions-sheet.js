@@ -55,7 +55,7 @@ class TransactionsSheet {
     const data = this.mainTable.getDataAsArray();
     const transactions = [];
     data.forEach((entry) => {
-      // (key, date, description, value, category, source)
+      // constructor(key, date, description, value, category, classificator, is_income, is_investment, source) {
       const transaction = new Transaction(
         entry.key,
         entry.date,
@@ -63,6 +63,8 @@ class TransactionsSheet {
         entry.amount,
         entry.category,
         entry.classificator,
+        entry.is_income,
+        entry.is_investment,
         entry.source
       );
       transactions.push(transaction);
