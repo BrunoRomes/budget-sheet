@@ -87,7 +87,7 @@ class PlaidUpdater {
     return JSON.parse(response).categories;
   }
 
-  getTransactionHistory(accessToken, accountId, startDate) {
+  getTransactionHistory(accessToken, accountId, startDate, includePending = false) {
     const COUNT = 500;
     // TODO: save last seen date to make it faster
     const endDate = `${YEAR}-12-31`;
@@ -106,7 +106,19 @@ class PlaidUpdater {
     const url = `${this.endpoint}/transactions/get`;
     const response = UrlFetchApp.fetch(url, parameters);
     const transactions = JSON.parse(response);
-    return transactions.transactions;
+    const filteredTransactions = [];
+    transactions.transactions.forEach((t) => {
+      if (t.pending) {
+        if (includePending) {
+          filteredTransactions.push(t);
+        } else {
+          log.info(`not adding transaction ${t} because it's pending`);
+        }
+      } else {
+        filteredTransactions.push(t);
+      }
+    });
+    return filteredTransactions;
   }
 
   sync() {
@@ -135,7 +147,7 @@ class PlaidUpdater {
         const lastDate = dateObjectFromString(lastDateProcessed);
         const startDate = formatDate(lastDate.setDate(lastDate.getDate() - 1));
 
-        const plaidTransactions = this.getTransactionHistory(plaidAccessToken, acc.account_id, startDate);
+        const plaidTransactions = this.getTransactionHistory(plaidAccessToken, acc.account_id, startDate, false);
         let maxDateProcessed = lastDate;
         plaidTransactions.forEach((t) => {
           const key = '';
