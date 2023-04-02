@@ -96,7 +96,12 @@ class CsvHandler {
     let transactions = {};
     for (let fileIndex = 0; fileIndex < files.length; fileIndex += 1) {
       const file = files[fileIndex];
+      let parsed = false;
+      log.info(`parsing file ${file}`);
       for (let parserIndex = 0; parserIndex < this.parsers.length; parserIndex += 1) {
+        if (parsed) {
+          break;
+        }
         const parser = this.parsers[parserIndex];
         const delim = parser.getDelim();
         const content = Utilities.parseCsv(file.getBlob().getDataAsString(), delim);
@@ -105,6 +110,7 @@ class CsvHandler {
             log.info(`Using ${parser.constructor.name} to parse the CSV file ${file}`);
             const fileTransaction = parser.parse(content);
             transactions = { ...transactions, ...fileTransaction }; // Merging dictionaries
+            parsed = true;
           }
         }
       }
