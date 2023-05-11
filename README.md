@@ -25,7 +25,7 @@ This project aims at generating and maintaining a Google Spreadsheet for budget 
 1. Manually create the folders you listed in your `userconfig.json` and move your sheet there. To leave everything in your Google Drive root folder, leave it empty arrays
 
 ### How to configure plaid sources
-https://plaid.com/docs/quickstart/
+https://plaid.com/docs/quickstart/ (remember to set `PLAID_PRODUCTS=transactions` as part of the products in Plaid, in order to retrieve CC information)
 
 and the format in json config is:
 

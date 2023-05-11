@@ -41,8 +41,8 @@ class MonthSheetBootstrapper extends BaseSheetBootstrapper {
       .withDataValidationRules([new ColumnValidationRule(5, this.categoryValidationRule)])
       .initialize([
         [
-          `=FILTER('All-Transactions'!${letterColDate}:${letterColSource}, Month('All-Transactions'!${letterColDate}:${letterColDate}
-          ) = month($C$1&2), 'All-Transactions'!${letterColIncome}:${letterColIncome} = "Yes", 'All-Transactions'!${letterColInvestment}:${letterColInvestment} = "No")`,
+          `=QUERY(FILTER('All-Transactions'!${letterColDate}:${letterColSource}, Month('All-Transactions'!${letterColDate}:${letterColDate}
+          ) = month($C$1&2), 'All-Transactions'!${letterColIncome}:${letterColIncome} = "Yes", 'All-Transactions'!${letterColInvestment}:${letterColInvestment} = "No"), "SELECT Col1, Col2*-1, Col3, Col4, Col5, Col6 LABEL Col2*-1 ''", 0)`,
           '',
           '',
           '',

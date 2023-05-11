@@ -16,7 +16,7 @@ class OverviewSheetBootstrapper extends BaseSheetBootstrapper {
       } )`;
       const formulaIncome = `=sumifs('All-Transactions'!${letterTransAmount}:${letterTransAmount}, 'All-Transactions'!${letterTransIsIncome}:${letterTransIsIncome}, "Yes", 'All-Transactions'!${letterTransIsInvestment}:${letterTransIsInvestment}, "No", arrayformula(Month('All-Transactions'!${letterTransDate}:${letterTransDate})),${
         i + 1
-      } )`;
+      } ) * -1`;
       summaryData.push([
         MONTHS[i],
         formulaIncome,

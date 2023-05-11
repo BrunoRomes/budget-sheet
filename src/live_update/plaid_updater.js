@@ -124,7 +124,9 @@ class PlaidUpdater {
   sync() {
     log.info('Plaid::sync');
     const resp = new Map();
+    let itemNum = 0;
     this.live_sources.forEach((source) => {
+      itemNum += 1;
       const plaidAccessToken = source.plaid_access_token;
       const categories = new CategorySheet().getCategories();
       // TODO make async, is it possible?
@@ -134,7 +136,7 @@ class PlaidUpdater {
       try {
         accounts = this.getAccounts(plaidAccessToken);
       } catch (err) {
-        resp[source.name] = err.message;
+        resp[`(${itemNum}) ${source.name}`] = err.message;
       }
       const scriptProperties = PropertiesService.getScriptProperties();
       accounts.forEach((acc) => {
@@ -165,13 +167,21 @@ class PlaidUpdater {
             key,
             transactionDate,
             t.name,
-            Math.abs(t.amount),
+            t.amount,
             cat,
             'Plaid',
             categories[cat].is_income ? 'Yes' : 'No',
             categories[cat].is_investment ? 'Yes' : 'No',
-            acc.official_name
+            `${source.name}: ${acc.official_name}`
           );
+
+          let counter = 2;
+          const transactionKey = transaction.key;
+          while (transaction.key in transactions) {
+            transaction.key = `${transactionKey}_${counter}`;
+            counter += 1;
+          }
+
           transactions[transaction.key] = transaction;
           // TODO: check how many are new (not seen)
         });
@@ -179,11 +189,12 @@ class PlaidUpdater {
         scriptProperties.setProperty(`${acc.account_id}_date`, formatDate(maxDateProcessed));
       }); // accounts for each
       const nTrans = tSheet.setExpenses(Object.values(transactions));
-      if (resp[source.name] === undefined) {
-        resp[source.name] = `${nTrans} transactions imported`;
+      if (resp[`(${itemNum}) ${source.name}`] === undefined) {
+        resp[`(${itemNum}) ${source.name}`] = `${nTrans} transactions imported`;
       }
-      tSheet.applyFormat();
     }); // live sources
+    const tSheet = new TransactionsSheet();
+    tSheet.applyFormat();
     return resp;
   }
 }

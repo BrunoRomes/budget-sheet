@@ -98,6 +98,10 @@ class CsvHandler {
       const file = files[fileIndex];
       let parsed = false;
       log.info(`parsing file ${file}`);
+      if (`${file}`.endsWith('NewTransactionKeys.csv')) {
+        log.info(`skipping file ${file}`);
+        parsed = true;
+      }
       for (let parserIndex = 0; parserIndex < this.parsers.length; parserIndex += 1) {
         if (parsed) {
           break;

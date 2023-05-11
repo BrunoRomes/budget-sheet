@@ -34,6 +34,10 @@
             }
         ]
     },
+    "plaid_cfg": {
+        "client_id": "FILL_ME",
+        "secret": "FILL_ME",
+    },
     "live_update_sources": [
         {
             "name" : "name",
