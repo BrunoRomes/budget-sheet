@@ -15,6 +15,15 @@ class TransactionsSheet {
     this.sheet.setFrozenRows(3);
 
     Formatter.applyDataFormat(this.mainTable, TransactionsSheet.transactionsFormat);
+    const conditionalFormatRules = [
+      SpreadsheetApp.newConditionalFormatRule()
+        .whenTextEqualTo('Other')
+        .setFontColor('#F46524')
+        .setBold(true)
+        .setRanges([this.mainTable.getDataRange()])
+        .build(),
+    ];
+    this.sheet.setConditionalFormatRules(conditionalFormatRules);
 
     const protections = this.sheet.getProtections(SpreadsheetApp.ProtectionType.RANGE);
     for (let i = 0; i < protections.length; i += 1) {

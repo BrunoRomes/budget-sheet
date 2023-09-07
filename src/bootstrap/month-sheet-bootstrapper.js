@@ -3,7 +3,7 @@ class MonthSheetBootstrapper extends BaseSheetBootstrapper {
     const monthIndex = MONTHS.indexOf(this.sheetName);
 
     const rule1 = SpreadsheetApp.newDataValidation()
-      .requireValueInList(['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'])
+      .requireValueInList(['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'])
       .build();
     this.sheet.getRange('C1').setDataValidation(rule1);
     this.sheet.getRange('C1').setValue('Jan');
