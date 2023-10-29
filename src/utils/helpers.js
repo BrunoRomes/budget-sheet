@@ -5,6 +5,30 @@ function groupBy(xs, key) {
     return agg;
   }, {});
 }
+function colToLetter(col) {
+  let temp;
+  let letter = '';
+  let column = col;
+  while (column > 0) {
+    temp = (column - 1) % 26;
+    letter = String.fromCharCode(temp + 65) + letter;
+    column = (column - temp - 1) / 26;
+  }
+  return letter;
+}
+
+function changeDirectory(absolutePath) {
+  let folder = DriveApp.getRootFolder();
+  for (let i = 0; i < absolutePath.length; i += 1) {
+    const folders = folder.getFoldersByName(absolutePath[i]);
+    if (folders.hasNext()) {
+      folder = folders.next();
+    } else {
+      throw new Error(`Unknown Folder: ${absolutePath[i]}`);
+    }
+  }
+  return folder;
+}
 
 function convertCurrencyToCad(currency, date) {
   let n = 1;
@@ -23,4 +47,27 @@ function convertCurrencyToCad(currency, date) {
     n += 1;
   }
   return undefined;
+}
+function titleCase(text) {
+  return text
+    .toLowerCase()
+    .replace(/^[-_]*(.)/, (_, c) => c.toUpperCase()) // Initial char (after -/_)
+    .replace(/[-_]+(.)/g, (_, c) => ` ${c.toUpperCase()}`); // First char after each -/_
+}
+
+function formatDate(date) {
+  const d = new Date(date);
+  let month = `${d.getMonth() + 1}`;
+  let day = `${d.getDate()}`;
+  const year = d.getFullYear();
+
+  if (month.length < 2) month = `0${month}`;
+  if (day.length < 2) day = `0${day}`;
+
+  return [year, month, day].join('-');
+}
+
+function dateObjectFromString(dateStr) {
+  const dateArray = dateStr.split('-');
+  return new Date(`${dateArray[0]}-${dateArray[1]}-${dateArray[2]}T00:00:00`);
 }

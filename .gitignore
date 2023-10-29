@@ -4,4 +4,3 @@ dist/
 .clasp.*
 userconfig.json
 .idea/
-webappconfig*.json

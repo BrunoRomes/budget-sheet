@@ -6,46 +6,60 @@ class InvestmentSheetBootstrapper extends BaseSheetBootstrapper {
 
   createSheet() {
     const numRows = 200;
+    const letterColDate = colToLetter(TransactionsSheet.columnDate);
+    const letterColSource = colToLetter(TransactionsSheet.columnSource);
+    const letterColIncome = colToLetter(TransactionsSheet.columnIsIncome);
+    const letterColInvestment = colToLetter(TransactionsSheet.columnIsInvestment);
     this.investmentsTable = new DataTable(
       this.sheet,
       2,
       2,
       'Investment',
-      ['Date', 'Amount', 'Description', 'Category', 'Source'],
+      ['Date', 'Amount', 'Description', 'Category', 'Classificator', 'Source'],
       numRows
     )
       .withDataValidationRules([new ColumnValidationRule(5, this.categoryValidationRule)])
-      .initialize([]);
+      .initialize([
+        [
+          `=FILTER('All-Transactions'!${letterColDate}:${letterColSource}, 'All-Transactions'!${letterColIncome}:${letterColIncome} = "No", 'All-Transactions'!${letterColInvestment}:${letterColInvestment} = "Yes")`,
+          '',
+          '',
+          '',
+          '',
+          '',
+        ],
+      ]);
 
     const classificationRows = [];
     for (let i = 0; i < numRows; i += 1) {
-      classificationRows.push(['', `=if(isblank($H${5 + i}), "", sumif($E$5:$E,$H${5 + i},$C$5:$C))`]);
+      const formulaCalc = `=if(isblank($I${5 + i}), "", sumif($E$5:$E,$I${5 + i},$C$5:$C))`;
+      if (i === 0) {
+        classificationRows.push([`=unique($E$5:$E$${numRows})`, formulaCalc]);
+      } else {
+        classificationRows.push([``, formulaCalc]);
+      }
     }
-
     this.classificationTable = new DataTable(
       this.sheet,
       2,
-      8,
+      9,
       'Investment Classification',
       ['Category', 'Amount'],
       numRows
     ).initialize(classificationRows);
 
-    this.summaryTable = new DataTable(this.sheet, 2, 11, 'Summary', ['Total'], 1).initialize([['=SUM(C5:C)']]);
+    this.summaryTable = new DataTable(this.sheet, 2, 12, 'Summary', ['Total'], 1).initialize([['=SUM(C5:C)']]);
 
     const chart = this.sheet
       .newChart()
       .asPieChart()
       .clearRanges()
-      .addRange(this.sheet.getRange('H5:H400'))
       .addRange(this.sheet.getRange('I5:I400'))
+      .addRange(this.sheet.getRange('J5:J400'))
       .setPosition(7, 11, 0, 0)
       .setTitle('Value VS Category')
       .build();
     this.sheet.insertChart(chart);
-
-    const image = this.sheet.insertImage(REFRESH_BUTTON_IMAGE, 12, 28);
-    image.assignScript('refresh');
   }
 
   applyFormat() {
@@ -55,19 +69,17 @@ class InvestmentSheetBootstrapper extends BaseSheetBootstrapper {
     Formatter.applyDefaultTableFormat(this.investmentsTable);
     Formatter.applyDefaultTableFormat(this.classificationTable);
 
-    const protections = this.sheet.getProtections(SpreadsheetApp.ProtectionType.RANGE);
-    for (let i = 0; i < protections.length; i += 1) {
-      protections[i].remove();
-    }
-
-    this.sheet.protect().setWarningOnly(true).setUnprotectedRanges([this.investmentsTable.getDataRange()]);
+    this.sheet.protect().setWarningOnly(true);
 
     this.sheet.setColumnWidth(4, 320);
     this.sheet.setColumnWidth(5, 150);
     this.sheet.setColumnWidth(6, 150);
     this.sheet.setColumnWidth(8, 150);
 
-    Formatter.applyDataFormat(this.investmentsTable, ['dd/mm/yyyy', '$###,###,##0.00', '', '', '']);
+    this.sheet.setColumnWidth(1, 20);
+    this.sheet.setColumnWidth(8, 20);
+
+    Formatter.applyDataFormat(this.investmentsTable, ['dd/mm/yyyy', '$###,###,##0.00', '', '', '', '']);
     Formatter.applyDataFormat(this.classificationTable, ['', '$###,###,##0.00']);
     Formatter.applyDataFormat(this.summaryTable, ['$###,###,##0.00']);
   }

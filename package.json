@@ -10,11 +10,11 @@
     "lint_fix": "npm run lint -- --fix",
     "format": "prettier --write src/",
     "copydist": "rm -rf ./dist && mkdir ./dist && cp appsscript.json dist/appsscript.json && cp userconfig.json dist/userconfig.json.html && cp -r src/* dist/",
-    "build": "./scripts/webapp_init.sh && npm run lint_fix && npm run copydist",
-    "upload": "npx clasp push -f && npx clasp deploy --description \"Clasp-triggered deployment\" -i $(cat dist/webappconfig.json.html | jq -r '.deployment_id') -V $(cat dist/webappconfig.json.html | jq -r '.version')",
-    "deploy": "rm -rf .clasp.json && cp .clasp.json_prod .clasp.json && npm run build && cp webappconfig_prod.json dist/webappconfig.json.html && npm run upload",
+    "build": "npm run lint_fix && npm run copydist",
+    "upload": "npx clasp push -f",
+    "deploy": "rm -rf .clasp.json && cp .clasp.json_prod .clasp.json && npm run build && npm run upload",
     "deploy-template": "npm run build && npm run upload-template",
-    "upload-template": "rm -rf .clasp.json && cp .clasp.json_test .clasp.json && cp webappconfig_test.json dist/webappconfig.json.html && npm run upload"
+    "upload-template": "rm -rf .clasp.json && cp .clasp.json_test .clasp.json && npm run upload"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.17.0",

@@ -161,17 +161,15 @@ class DataTable {
     }
 
     const formattedData = [];
+    log.debug(`set data, the headers are ${this.headersKeys}`);
     for (let i = 0; i < data.length; i += 1) {
       const entry = data[i];
       const formattedEntry = [];
-
       for (let j = 0; j < this.headersKeys.length; j += 1) {
         formattedEntry.push(entry[this.headersKeys[j]]);
       }
-
       formattedData.push(formattedEntry);
     }
-
     this.getTopDataRange(formattedData.length).setValues(formattedData);
   }
 

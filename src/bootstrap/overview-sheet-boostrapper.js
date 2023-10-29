@@ -4,13 +4,23 @@ class OverviewSheetBootstrapper extends BaseSheetBootstrapper {
   }
 
   createSheet() {
+    const letterTransAmount = colToLetter(TransactionsSheet.columnAmmount);
+    const letterTransDate = colToLetter(TransactionsSheet.columnDate);
+    const letterTransIsInvestment = colToLetter(TransactionsSheet.columnIsInvestment);
+    const letterTransIsIncome = colToLetter(TransactionsSheet.columnIsIncome);
     const numRows = 200;
     const summaryData = [];
     for (let i = 0; i < MONTHS.length; i += 1) {
+      const formulaExpenses = `=sumifs('All-Transactions'!${letterTransAmount}:${letterTransAmount}, 'All-Transactions'!${letterTransIsIncome}:${letterTransIsIncome}, "No", 'All-Transactions'!${letterTransIsInvestment}:${letterTransIsInvestment}, "No", arrayformula(Month('All-Transactions'!${letterTransDate}:${letterTransDate})),${
+        i + 1
+      } )`;
+      const formulaIncome = `=sumifs('All-Transactions'!${letterTransAmount}:${letterTransAmount}, 'All-Transactions'!${letterTransIsIncome}:${letterTransIsIncome}, "Yes", 'All-Transactions'!${letterTransIsInvestment}:${letterTransIsInvestment}, "No", arrayformula(Month('All-Transactions'!${letterTransDate}:${letterTransDate})),${
+        i + 1
+      } ) * -1`;
       summaryData.push([
         MONTHS[i],
-        `=${MONTHS[i]}!$C$2`,
-        `=${MONTHS[i]}!$C$3`,
+        formulaIncome,
+        formulaExpenses,
         `=C${i + 4}-D${i + 4}`,
         `=IFERROR(D${i + 4}/C${i + 4},0)`,
       ]);
@@ -34,12 +44,29 @@ class OverviewSheetBootstrapper extends BaseSheetBootstrapper {
     breakdownHeaders.push('TOTAL');
     breakdownHeaders.push('Average');
 
+    const monthCatCol = colToLetter(MonthSheet.colExpCategory);
+    const monthAmount = colToLetter(MonthSheet.colExpAmount);
     const breakdownData = [];
     for (let i = 0; i < numRows; i += 1) {
       const data = [];
-      data.push('');
+      if (i === 0) {
+        data.push(
+          `=unique('All-Transactions'!${colToLetter(TransactionsSheet.columnCategory)}4:${colToLetter(
+            TransactionsSheet.columnCategory
+          )})`
+        );
+      } else {
+        data.push('');
+      }
+      // TODO: use references on formulas
       for (let j = 0; j < MONTHS.length; j += 1) {
-        data.push(`=if(isblank($B${i + 43}), "", sumif(${MONTHS[j]}!$N$24:$N,$B${i + 43},${MONTHS[j]}!$O$24:$O))`);
+        const form = `=if(isblank($B${
+          i + 43
+        }), "", sumifs('All-Transactions'!C4:C, 'All-Transactions'!H4:H, "No", 'All-Transactions'!I4:I, "No", arrayformula(Month('All-Transactions'!B4:B)),${
+          j + 1
+        } , 'All-Transactions'!E4:E, $B${43 + i}))`;
+
+        data.push(form);
       }
       data.push(`=if(isblank($B${i + 43}), "", sum(IFERROR(C${i + 43}:N${i + 43})))`);
       data.push(`=if(isblank($B${i + 43}), "", IFERROR(AVERAGE(C${i + 43}:N${i + 43}),0))`);
@@ -86,15 +113,12 @@ class OverviewSheetBootstrapper extends BaseSheetBootstrapper {
         .newChart()
         .asPieChart()
         .clearRanges()
-        .addRange(this.sheet.getRange('B58:B258'))
-        .addRange(this.sheet.getRange('O58:O258'))
+        .addRange(this.sheet.getRange('B43:B258'))
+        .addRange(this.sheet.getRange('O43:O258'))
         .setPosition(19, 8, 0, 0)
         .setTitle('Total VS Category')
         .build()
     );
-
-    const image = this.sheet.insertImage(REFRESH_BUTTON_IMAGE, 15, 2);
-    image.assignScript('refresh');
   }
 
   applyFormat() {
@@ -123,6 +147,7 @@ class OverviewSheetBootstrapper extends BaseSheetBootstrapper {
     }
     Formatter.applyDataFormat(this.breakdownTable, breakdownFormat);
 
-    this.sheet.setColumnWidth(2, 200);
+    this.sheet.setColumnWidth(2, 150);
+    this.sheet.setColumnWidth(1, 20);
   }
 }

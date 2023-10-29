@@ -1,5 +1,6 @@
 class Formatter {
   static applyDefaultTableFormat(dataTable) {
+    this.removeTableFormat(dataTable);
     const titleRange = dataTable.getTitleRange();
     titleRange.setFontColor('#f46524');
     titleRange.setFontSize(18);
@@ -43,12 +44,20 @@ class Formatter {
 
   static removeTableFormat(dataTable) {
     dataTable.getTitleRange().clearFormat();
+    dataTable
+      .getDataRange()
+      .getBandings()
+      .forEach((b) => {
+        b.remove();
+      });
 
     const headersRange = dataTable.getHeadersRange();
     if (headersRange != null) {
+      headersRange.getBandings().forEach((b) => {
+        b.remove();
+      });
       headersRange.clearFormat();
     }
-
     dataTable.getDataRange().clearFormat();
   }
 }

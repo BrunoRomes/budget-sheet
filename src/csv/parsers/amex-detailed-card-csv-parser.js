@@ -41,7 +41,7 @@ class AmexDetailedCardCsvParser extends BaseCsvParser {
       const description = current[1];
       const value = parseFloat(current[4].trim().split('$')[1]);
       const trans = new CsvTransaction(dateArray[0], dateArray[1], dateArray[2], description, -value, cardName, '');
-      Logger.log(trans.toStr());
+      log.info(trans.toStr());
       let { key } = trans;
       let count = 1;
       while (key in transactions) {

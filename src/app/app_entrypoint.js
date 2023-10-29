@@ -13,33 +13,16 @@ function withErrorHandling(func) {
   }
 }
 
-function sanitizeCsvs() {
-  withErrorHandling((modalHelper) => {
-    const csvHandler = new CsvHandler();
-    modalHelper.showWait('Sanitizing CSVs...');
-    csvHandler.sanitizeCsvs();
-    modalHelper.showWait('Importing transactions from CSVs...');
-    csvHandler.importTransactions();
-  });
-}
-
 function refresh() {
   withErrorHandling((modalHelper) => {
     const sheetName = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getName();
     modalHelper.showWait(`Refreshing ${sheetName} ...`);
-    if (MONTHS.indexOf(sheetName) >= 0) {
-      new CsvHandler().importTransactionsForMonth(MONTHS.indexOf(sheetName));
-      const sheet = new MonthSheet(sheetName);
+    if (sheetName === 'All-Transactions') {
+      const sheet = new TransactionsSheet();
       sheet.refresh();
       sheet.applyFormat();
     } else if (sheetName === 'CashFlow') {
       new CashflowManager().updateCashflow();
-    } else if (sheetName === 'Overview') {
-      new OverviewSheet().refresh();
-    } else if (sheetName === 'Investments') {
-      const sheet = new InvestmentSheet();
-      sheet.refresh();
-      sheet.applyFormat();
     }
   });
 }
@@ -49,20 +32,24 @@ function init() {
     // Init the spreadsheet: bootstraps and applies migrations.
     // This is slow, it will take a while.
     modalHelper.showWait('Bootstrapping...');
-    // new Bootstrap().run();
-    invokeBootstrap();
+    new Bootstrap().run();
     modalHelper.showWait('Applying migrations...');
     new MigrationManager().run();
-    // invokeMigrations();
-    const csvHandler = new CsvHandler();
-    modalHelper.showWait('Sanitizing CSVs...');
-    csvHandler.sanitizeCsvs();
-    modalHelper.showWait('Importing transactions from CSVs...');
-    csvHandler.importTransactions();
-    sanitizeCsvs(); // TODO: THis can probably be its own trigger, as it does not depend on the spreadsheet schema at all. Loading transactions from the csv into the spreadsheet is another story, though.
     modalHelper.showWait('Refreshing Cashflow...');
     new CashflowManager().updateCashflow();
   });
+}
+
+function importCsvs() {
+  let nTrans = 0;
+  withErrorHandling((modalHelper) => {
+    const csvHandler = new CsvHandler();
+    modalHelper.showWait('Sanitizing CSVs...');
+    csvHandler.sanitizeCsvs(YEAR, true);
+    modalHelper.showWait('Importing transactions from CSVs...');
+    nTrans = csvHandler.importTransactions(true);
+  });
+  SpreadsheetApp.getUi().alert(`${nTrans} transactions found.`);
 }
 
 function reset() {
@@ -72,9 +59,54 @@ function reset() {
 function onOpen(_e) {
   SpreadsheetApp.getUi() // Or DocumentApp, SlidesApp, or FormApp.
     .createMenu('Finance')
-    .addItem('Setup Triggers', 'createOnOpenTriggers')
-    // .addItem('Prepare to import CSVs', 'sanitizeCsvs')
+    .addItem('Plaid Sync', 'doPlaid')
+    .addItem('Import CSVs', 'importCsvs')
+    .addItem('Classify Transactions', 'classifyTransactions')
     .addToUi();
+
+  SpreadsheetApp.getUi() // Or DocumentApp, SlidesApp, or FormApp.
+    .createMenu('Finance-Maintenance')
+    .addItem('Setup Triggers', 'createOnOpenTriggers')
+    .addItem('Clean Properties', 'cleanProperties')
+    .addItem('Delete Keys', 'deleteKeys')
+    .addToUi();
+}
+
+function cleanProperties() {
+  log.info(`${JSON.stringify(PropertiesService.getScriptProperties().getProperties())}`);
+  PropertiesService.getScriptProperties().deleteAllProperties();
+}
+
+function deleteKeys() {
+  UserConfig.loadConfig();
+  const keysCsvFilename = SpreadsheetApp.getActive().getName() + KEYS_FILENAME_SUFFIX;
+  const folder = changeDirectory(CSVS_FOLDER_PATH);
+  log.info(`keys file is ${keysCsvFilename} and folder ${folder.getName()}`);
+  const filesIt = folder.getFilesByName(keysCsvFilename);
+  if (filesIt.hasNext()) {
+    log.info('setting trashed');
+    filesIt.next().setTrashed(true);
+  } else {
+    log.info('file not found');
+  }
+}
+
+function classifyTransactions() {
+  new TransactionsSheet().refresh();
+}
+
+function doPlaid() {
+  let syncResult;
+  withErrorHandling((modalHelper) => {
+    modalHelper.showWait('Syncing with Plaid...');
+    const plaid = new PlaidUpdater();
+    syncResult = plaid.sync();
+  });
+  let errors = '';
+  Object.keys(syncResult).forEach((k) => {
+    errors += `${k} : ${syncResult[k]}\n\n`;
+  });
+  SpreadsheetApp.getUi().alert(`${errors}`);
 }
 
 function createOnOpenTriggers() {
@@ -82,4 +114,46 @@ function createOnOpenTriggers() {
   Trigger.deleteAllTriggers();
   Trigger.createSpreadsheetOpenTrigger('init');
   init();
+}
+
+function onEdit(e) {
+  const startCol = e.range.columnStart;
+  const endCol = e.range.columnEnd;
+  const startRow = e.range.rowStart;
+  const endRow = e.range.rowEnd;
+  const newValue = e.value;
+
+  if (e.range.getSheet().getName() === 'All-Transactions') {
+    log.debug(`all-transactions change col: ${startCol}:${endCol} row: ${startRow}:${endRow}`);
+    if (startCol === endCol && startRow === endRow && startCol === TransactionsSheet.columnCategory) {
+      // user changed the category, so the classificator is now 'Manual'
+      SpreadsheetApp.getActiveSpreadsheet()
+        .getSheetByName('All-Transactions')
+        .getRange(colToLetter(TransactionsSheet.columnClassificator) + startRow)
+        .setValue('Manual');
+      const cats = new CategorySheet().getCategories();
+      if (cats[newValue].is_investment) {
+        SpreadsheetApp.getActiveSpreadsheet()
+          .getSheetByName('All-Transactions')
+          .getRange(colToLetter(TransactionsSheet.columnIsInvestment) + startRow)
+          .setValue('Yes');
+      } else {
+        SpreadsheetApp.getActiveSpreadsheet()
+          .getSheetByName('All-Transactions')
+          .getRange(colToLetter(TransactionsSheet.columnIsInvestment) + startRow)
+          .setValue('No');
+      }
+      if (cats[newValue].is_income) {
+        SpreadsheetApp.getActiveSpreadsheet()
+          .getSheetByName('All-Transactions')
+          .getRange(colToLetter(TransactionsSheet.columnIsIncome) + startRow)
+          .setValue('Yes');
+      } else {
+        SpreadsheetApp.getActiveSpreadsheet()
+          .getSheetByName('All-Transactions')
+          .getRange(colToLetter(TransactionsSheet.columnIsIncome) + startRow)
+          .setValue('No');
+      }
+    }
+  }
 }

@@ -63,6 +63,7 @@ class CashflowSheetBootstrapper extends BaseSheetBootstrapper {
       .setWarningOnly(true)
       .setUnprotectedRanges([this.cashFlowTable.getDataRange(), this.projectionTable.getDataRange()]);
 
+    this.sheet.setColumnWidth(1, 20);
     this.sheet.setColumnWidth(4, 320);
     this.sheet.setColumnWidth(5, 150);
     this.sheet.setColumnWidth(8, 150);

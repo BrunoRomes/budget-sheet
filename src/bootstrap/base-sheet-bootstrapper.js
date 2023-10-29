@@ -1,28 +1,21 @@
 class BaseSheetBootstrapper {
   constructor(sheetName) {
+    const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
     this.sheetName = sheetName;
-  }
-
-  init() {
-    const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(this.sheetName);
 
     if (sheet !== null) {
-      Logger.log(`${this.sheetName} sheet already exists. Skipping it.`);
+      log.info(`${sheetName} sheet already exists. Skipping it.`);
       this.alreadyExists = true;
       this.sheet = sheet;
     } else {
-      Logger.log(`Bootstrapping sheet ${this.sheetName}`);
+      log.info(`Bootstrapping sheet ${sheetName}`);
       this.alreadyExists = false;
-      this.sheet = SpreadsheetApp.getActiveSpreadsheet().insertSheet(this.sheetName, 0);
+      this.sheet = SpreadsheetApp.getActiveSpreadsheet().insertSheet(sheetName, 0);
     }
   }
 
-  getSheetName() {
-    return this.sheetName;
-  }
-
-  bootstrap(force) {
-    if (force === false && this.alreadyExists) {
+  bootstrap() {
+    if (this.alreadyExists) {
       return;
     }
     this.createSheet();
@@ -31,10 +24,10 @@ class BaseSheetBootstrapper {
   }
 
   createSheet() {
-    Logger.log("'createSheet' from BaseSheet called. Nothing will be done here.");
+    log.info("'createSheet' from BaseSheet called. Nothing will be done here.");
   }
 
   applyFormat() {
-    Logger.log("'applyFormat' from BaseSheet called. Nothing will be done here.");
+    log.info("'applyFormat' from BaseSheet called. Nothing will be done here.");
   }
 }

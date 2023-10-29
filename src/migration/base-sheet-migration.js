@@ -12,12 +12,12 @@ class BaseSheetMigration {
     const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
     const sheet = spreadsheet.getSheetByName(this.sheetName);
     if (!this.skipCloneSheet) {
-      Logger.log('Cloning Sheet');
+      log.info('Cloning Sheet');
       const copiedSheet = sheet.copyTo(spreadsheet);
       copiedSheet.hideSheet();
       try {
         // Attempt the whole migration in a clone of the sheet first
-        Logger.log('Attempting migration on cloned sheet');
+        log.info('Attempting migration on cloned sheet');
         this.prepareSchema(copiedSheet);
         this.loadData();
         this.applyMigration(copiedSheet);
@@ -30,9 +30,9 @@ class BaseSheetMigration {
         SpreadsheetApp.getActiveSpreadsheet().deleteSheet(copiedSheet);
         SpreadsheetApp.flush();
       }
-      Logger.log('Migration on cloned sheet succeeded. Applying migration in original sheet');
+      log.info('Migration on cloned sheet succeeded. Applying migration in original sheet');
     } else {
-      Logger.log('Skipping migration on cloned sheet.');
+      log.info('Skipping migration on cloned sheet.');
     }
     this.prepareSchema(sheet);
     this.loadData();
@@ -40,18 +40,18 @@ class BaseSheetMigration {
     SpreadsheetApp.flush();
     this.writeDataPostMigration();
     SpreadsheetApp.flush();
-    Logger.log('Migration succeeded');
+    log.info('Migration succeeded');
   }
 
   prepareSchema(_sheet) {}
 
   loadData() {
-    Logger.log('No Data loaded');
+    log.info('No Data loaded');
   }
 
   applyMigration(_sheet) {}
 
   writeDataPostMigration() {
-    Logger.log('No Data written');
+    log.info('No Data written');
   }
 }

@@ -9,14 +9,14 @@
             {
                 "value": -10,
                 "event": "FakeEvent1",
-                "startDate": "2023-01-03"
+                "startDate": "2023-01-01"
             }
         ],
         "biweeklyExpenses": [
             {
                 "value": -30,
                 "event": "FakeEvent2",
-                "startDate": "2023-01-12"
+                "startDate": "2023-01-13"
             }
         ],
         "rogersCard": [{}],
@@ -33,5 +33,15 @@
                 "event": "Fake Tangerine Acc"
             }
         ]
-    }
+    },
+    "plaid_cfg": {
+        "client_id": "FILL_ME",
+        "secret": "FILL_ME",
+    },
+    "live_update_sources": [
+        {
+            "name" : "name",
+            "plaid_access_token": "access-development-uuid"
+        },
+    ],
 }

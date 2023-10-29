@@ -1,7 +1,7 @@
 class CsvHandler {
   constructor() {
-    this.folder = this.private_changeDirectory(CSVS_FOLDER_PATH);
-    this.sanitized_csv_suffix = ' Sanitized Transactions.csv';
+    this.folder = changeDirectory(CSVS_FOLDER_PATH);
+    this.sanitized_csv_filename = 'Sanitized Transactions.csv';
     this.parsers = [
       new SanitizedCsvParser(),
       new TangerineCsvParser(),
@@ -16,49 +16,45 @@ class CsvHandler {
     ];
   }
 
-  sanitizeCsvs() {
-    Logger.log('Sanitizing CSVs');
+  sanitizeCsvs(currentYear, removeFiles = true) {
+    log.info('Sanitizing CSVs');
     const files = this.private_listCsvs();
     const transactions = this.private_parseCsvs(files);
     if (Object.keys(transactions).length === 0) {
-      Logger.log('No transaction founds.');
+      log.info('No transaction found.');
       return;
     }
-
-    const values = Object.keys(transactions)
-      .sort()
-      .map((key) => transactions[key]);
-    const groupedTransactions = groupBy(values, 'yearMonth');
-    this.private_exportCsvs(groupedTransactions);
-    this.private_removeOldCsvs(files);
-  }
-
-  importTransactions() {
-    Logger.log('Importing Transactions');
-    for (let i = 0; i < MONTHS.length; i += 1) {
-      this.importTransactionsForMonth(i);
+    // Remove last year transactions and sort by date
+    const entries = Object.values(transactions)
+      .filter((entry) => parseInt(entry.year, 10) === parseInt(currentYear, 10))
+      .sort((a, b) => a.date - b.date);
+    log.info(`${entries.length} entries after filtering`);
+    this.private_exportCsv(entries);
+    if (removeFiles) {
+      this.private_removeOldCsvs(files);
     }
   }
 
-  importTransactionsForMonth(monthIndex) {
-    const filePrefix = `${YEAR}-${monthIndex + 1 < 10 ? `0${monthIndex + 1}` : monthIndex + 1}${
-      this.sanitized_csv_suffix
-    }`;
-    const filesIt = this.folder.getFilesByName(filePrefix);
+  importTransactions(removeFiles = true) {
+    // TODO: alex working on this.....
+    log.info('Importing Transactions');
+    let nTrans = 0;
+    const filesIt = this.folder.getFilesByName(this.sanitized_csv_filename);
     if (filesIt.hasNext()) {
-      Logger.log(`Importing transactions from file ${filePrefix}`);
+      log.info(`Importing transactions from file ${this.sanitized_csv_filename}`);
       const file = filesIt.next();
       const transactions = this.private_parseCsvs([file]);
-      this.private_updateTransactions(transactions, MONTHS[monthIndex]);
-      file.setTrashed(true);
+      this.private_updateTransactions(transactions);
+      nTrans += Object.keys(transactions).length;
+      file.setTrashed(removeFiles);
     }
+    return nTrans;
   }
 
   // Private Methods
 
-  private_updateTransactions(mappedTransactions, month) {
-    const sheet = new MonthSheet(month);
-
+  private_updateTransactions(mappedTransactions) {
+    const sheet = new TransactionsSheet('All-Transactions');
     const expenses = sheet.getExpensesAsMap();
     const transactions = Object.values(mappedTransactions);
     for (let i = 0; i < transactions.length; i += 1) {
@@ -70,30 +66,19 @@ class CsvHandler {
         transaction.description,
         -transaction.value,
         'Other',
+        'None',
+        'No',
+        'No',
         transaction.source
       );
       if (expense.key in expenses) {
-        // Logger.log("Transaction already seen. Skipping: " + expense.key);
+        log.info(`Transaction already seen. Skipping: ${expense.key}`);
       } else {
         expenses[expense.key] = expense;
-        Logger.log(`New Transaction Found: ${expense.key}`);
+        log.info(`New Transaction Found: ${expense.key}`);
       }
     }
-
     sheet.setExpenses(Object.values(expenses));
-  }
-
-  private_changeDirectory(absolutePath) {
-    let folder = DriveApp.getRootFolder();
-    for (let i = 0; i < absolutePath.length; i += 1) {
-      const folders = folder.getFoldersByName(absolutePath[i]);
-      if (folders.hasNext()) {
-        folder = folders.next();
-      } else {
-        throw new Error(`Unknown Folder: ${absolutePath[i]}`);
-      }
-    }
-    return folder;
   }
 
   private_listCsvs() {
@@ -103,7 +88,7 @@ class CsvHandler {
       files.push(filesByType.next());
     }
 
-    Logger.log(`${files.length} CSV files found.`);
+    log.info(`${files.length} CSV files found.`);
     return files;
   }
 
@@ -111,37 +96,35 @@ class CsvHandler {
     let transactions = {};
     for (let fileIndex = 0; fileIndex < files.length; fileIndex += 1) {
       const file = files[fileIndex];
+      let parsed = false;
+      log.info(`parsing file ${file}`);
+      if (`${file}`.endsWith('NewTransactionKeys.csv')) {
+        log.info(`skipping file ${file}`);
+        parsed = true;
+      }
       for (let parserIndex = 0; parserIndex < this.parsers.length; parserIndex += 1) {
+        if (parsed) {
+          break;
+        }
         const parser = this.parsers[parserIndex];
         const delim = parser.getDelim();
         const content = Utilities.parseCsv(file.getBlob().getDataAsString(), delim);
         if (content.length >= 1) {
           if (parser.canParse(content)) {
-            Logger.log(`Using ${parser.constructor.name} to parse the CSV file ${file}`);
+            log.info(`Using ${parser.constructor.name} to parse the CSV file ${file}`);
             const fileTransaction = parser.parse(content);
             transactions = { ...transactions, ...fileTransaction }; // Merging dictionaries
+            parsed = true;
           }
         }
       }
     }
-    Logger.log(`Total of ${Object.keys(transactions).length} transactions found.`);
+    log.info(`Total of ${Object.keys(transactions).length} transactions found.`);
     return transactions;
   }
 
-  private_exportCsvs(groupedTransactions) {
-    const dates = Object.keys(groupedTransactions);
-    for (let i = 0; i < dates.length; i += 1) {
-      this.private_exportCsv(dates[i], groupedTransactions[dates[i]]);
-    }
-  }
-
-  private_exportCsv(yearMonth, transactions) {
-    if (yearMonth < this.private_getDateThreshold()) {
-      Logger.log(`Skipping file creation for ${yearMonth}.`);
-      return;
-    }
-
-    const fileName = yearMonth + this.sanitized_csv_suffix;
+  private_exportCsv(transactions) {
+    const fileName = this.sanitized_csv_filename;
     const rows = ['Key,Source,Year,Month,Day,Description,Value,YearMonth'];
     for (let i = 0; i < transactions.length; i += 1) {
       const t = transactions[i];
@@ -164,10 +147,10 @@ class CsvHandler {
     if (files.hasNext()) {
       const file = files.next();
       file.setContent(csv);
-      Logger.log(`File ${fileName} updated.`);
+      log.info(`File ${fileName} updated with ${transactions.length} transactions. `);
     } else {
       this.folder.createFile(fileName, csv);
-      Logger.log(`File ${fileName} created.`);
+      log.info(`File ${fileName} created with ${transactions.length} transactions.`);
     }
   }
 
@@ -181,8 +164,8 @@ class CsvHandler {
     for (let i = 0; i < files.length; i += 1) {
       const file = files[i];
       const name = file.getName();
-      if (!name.endsWith(this.sanitized_csv_suffix) || name.substring(0, 8) < threshold) {
-        Logger.log(`Deleting file ${name}`);
+      if (!name.endsWith(this.sanitized_csv_filename) || name.substring(0, 8) < threshold) {
+        log.info(`Deleting file ${name}`);
         file.setTrashed(true);
       }
     }

@@ -1,10 +1,6 @@
 class CategorySheetBootstrapper extends BaseSheetBootstrapper {
   constructor() {
     super('Categories');
-  }
-
-  init() {
-    super.init();
     const dataStartRow = 4;
     const range = this.sheet.getRange(dataStartRow, 2, 200, 1);
     this.categoryValidationRule = SpreadsheetApp.newDataValidation().requireValueInRange(range).build();
@@ -15,35 +11,48 @@ class CategorySheetBootstrapper extends BaseSheetBootstrapper {
     this.dataTable = new DataTable(this.sheet, 1, 2, 'Categories', ['Name', 'Is Income', 'Is Investment'], numRows)
       .withCheckboxes([new ColumnCheckbox(3), new ColumnCheckbox(4)])
       .initialize([
+        // plaid categories
+        ['Income', true, false],
+        ['Transfer In', false, false],
+        ['Transfer Out', false, false],
+        ['Loan Payments', false, false],
+        ['Bank Fees', false, false],
+        ['Entertainment', false, false],
+        ['Food And Drink', false, false],
+        ['General Merchandise', false, false],
+        ['Home Improvement', false, false],
+        ['Medical', false, false],
+        ['Personal Care', false, false],
+        ['General Services', false, false],
+        ['Government And Non Profit', false, false],
+        ['Transportation', false, false],
+        ['Travel', false, false],
+        ['Rent And Utilities', false, false],
+        // User categories
         ['Other', false, false],
         ['To Remove', false, false],
         ['Beauty', false, false],
         ['Booze', false, false],
         ['Car Insurance', false, false],
         ['Car Maintenance', false, false],
-        ['Cellphone', false, false],
+        ['Communication', false, false],
         ['Clothing', false, false],
         ['Electronics', false, false],
-        ['Entertainment', false, false],
-        ['Fees', false, false],
         ['Games', false, false],
         ['Gas', false, false],
         ['Gift', false, false],
         ['Grocery', false, false],
         ['Healthcare', false, false],
-        ['House Stuff', false, false],
         ['Housing', false, false],
+        ['House Stuff', false, false],
         ['Insurance', false, false],
         ['Internet Services', false, false],
         ['Learning', false, false],
         ['Parking', false, false],
-        ['Paycheck', true, false],
-        ['Restaurant', false, false],
+        ['Paycheck', false, false],
         ['RRSP', false, true],
         ['Sports', false, false],
         ['TFSA', false, true],
-        ['Transportation', false, false],
-        ['Travel', false, false],
         ['Interest', true, false],
         ['Cashback', true, false],
       ]);
@@ -60,7 +69,8 @@ class CategorySheetBootstrapper extends BaseSheetBootstrapper {
     }
 
     this.sheet.protect().setWarningOnly(true).setUnprotectedRanges([this.dataTable.getDataRange()]);
-    this.sheet.setColumnWidth(2, 200);
+    this.sheet.setColumnWidth(1, 20);
+    this.sheet.setColumnWidth(2, 250);
   }
 
   getValidationRule() {
